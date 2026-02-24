@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050810">
+<title>T1 Broker — Create Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050810;--bg2:#0a0f1e;--card:#0f1726;--border:rgba(255,255,255,.06);--text:#e8ecf4;--text2:#8892a8;--text3:#4a5568;--accent:#3b82f6;--accent2:#6366f1;--green:#10b981;--red:#ef4444;--purple:#8b5cf6;--glow:rgba(59,130,246,.15)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;position:relative;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(59,130,246,.06),transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(139,92,246,.04),transparent 50%);pointer-events:none}
+.mono{font-family:'JetBrains Mono',monospace}
+.wrap{position:relative;z-index:1;width:100%;max-width:520px}
+.logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:32px;text-decoration:none}
+.logo-mark{width:42px;height:42px;background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:11px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:white;box-shadow:0 2px 16px rgba(59,130,246,.3)}
+.logo-text{font-weight:700;font-size:22px;letter-spacing:-.5px}
+.logo-text span{color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.card h1{font-size:24px;font-weight:800;margin-bottom:4px;letter-spacing:-.5px}
+.card .sub{font-size:14px;color:var(--text3);margin-bottom:32px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fg{margin-bottom:20px}
+.fl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:6px}
+.fi{width:100%;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
+.fi:focus{border-color:var(--accent)}.fi::placeholder{color:var(--text3)}
+.fs{width:100%;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%234a5568' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+.fs:focus{border-color:var(--accent)}
+.pw-s{height:3px;border-radius:2px;background:var(--border);margin-top:6px;overflow:hidden}.pw-bar{height:100%;border-radius:2px;transition:width .3s,background .3s;width:0}
+.cb-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:20px}
+.cb-row input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px;cursor:pointer}
+.cb-row label{font-size:13px;color:var(--text2);cursor:pointer;line-height:1.5}
+.cb-row a{color:var(--accent);text-decoration:none}.cb-row a:hover{text-decoration:underline}
+.sbtn{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:all .25s;letter-spacing:-.2px}
+.sbtn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 30px var(--glow)}.sbtn:disabled{opacity:.5;cursor:not-allowed}
+.err{font-size:12px;color:var(--red);text-align:center;margin-top:12px;display:none}
+.ok{display:none;text-align:center;padding:32px 0}
+.ok .chk{width:64px;height:64px;border-radius:50%;background:rgba(16,185,129,.1);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px;border:2px solid var(--green)}
+.ok h2{font-size:22px;font-weight:700;margin-bottom:8px}
+.ok p{font-size:14px;color:var(--text2);margin-bottom:8px;line-height:1.6}
+.ok .note{font-size:12px;color:var(--text3);padding:12px 16px;background:var(--bg2);border-radius:10px;border:1px solid var(--border);margin:16px 0;text-align:left;line-height:1.7}
+.si-link{text-align:center;margin-top:20px;font-size:13px;color:var(--text3)}
+.si-link a{color:var(--accent);font-weight:600;text-decoration:none}.si-link a:hover{text-decoration:underline}
+.mfa-badge{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border:1px solid rgba(16,185,129,.2);border-radius:10px;background:rgba(16,185,129,.04);margin-bottom:20px;font-size:12px;color:var(--green)}
+@media(max-width:560px){.form-row{grid-template-columns:1fr}.card{padding:28px 24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="/landing.html" class="logo"><div class="logo-mark">T1</div><div class="logo-text">T1 <span>Broker</span></div></a>
+  <div class="card">
+    <div id="signupForm">
+      <h1>Create your account</h1>
+      <div class="sub">Start trading across public, crypto &amp; private markets</div>
+      <div class="mfa-badge">&#x1F510; Two-factor authentication is automatically enabled for your security</div>
+      <div class="form-row">
+        <div class="fg"><label class="fl">First Name</label><input class="fi" id="firstName" type="text" placeholder="John" required></div>
+        <div class="fg"><label class="fl">Last Name</label><input class="fi" id="lastName" type="text" placeholder="Doe" required></div>
+      </div>
+      <div class="fg"><label class="fl">Email Address</label><input class="fi" id="signupEmail" type="email" placeholder="you@email.com" required></div>
+      <div class="fg"><label class="fl">Password</label><input class="fi" id="signupPw" type="password" placeholder="Min 8 chars, 1 uppercase, 1 number" oninput="checkPw()" required><div class="pw-s"><div class="pw-bar" id="pwBar"></div></div></div>
+      <div class="fg"><label class="fl">Confirm Password</label><input class="fi" id="signupPwC" type="password" placeholder="Re-enter password" required></div>
+      <div class="form-row">
+        <div class="fg"><label class="fl">Country of Residence</label><select class="fs" id="country" required><option value="">Select country</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="AE">United Arab Emirates</option><option value="SG">Singapore</option><option value="HK">Hong Kong</option><option value="CH">Switzerland</option><option value="DE">Germany</option><option value="FR">France</option><option value="JP">Japan</option><option value="AU">Australia</option><option value="CA">Canada</option><option value="NL">Netherlands</option><option value="IE">Ireland</option><option value="SA">Saudi Arabia</option><option value="QA">Qatar</option><option value="KW">Kuwait</option><option value="BH">Bahrain</option><option value="IN">India</option><option value="BR">Brazil</option><option value="KR">South Korea</option><option value="ZA">South Africa</option><option value="OTHER">Other</option></select></div>
+        <div class="fg"><label class="fl">Account Type</label><select class="fs" id="clientType"><option value="individual">Individual</option><option value="corporate">Corporate</option><option value="institutional">Institutional</option></select></div>
+      </div>
+      <div class="cb-row"><input type="checkbox" id="agreeTerms" required><label for="agreeTerms">I agree to the <a href="/terms.html" target="_blank">Terms of Service</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>, and understand that KYC verification is required before trading is enabled.</label></div>
+      <button class="sbtn" id="submitBtn" onclick="doSignup()">Create Account</button>
+      <div class="err" id="signupErr"></div>
+      <div class="si-link">Already have an account? <a href="/index.html">Sign In</a></div>
+    </div>
+    <div class="ok" id="signupOk">
+      <div class="chk">&#x2713;</div>
+      <h2>Account Created</h2>
+      <p>Your account has been created with <strong>email two-factor authentication</strong> enabled by default.</p>
+      <div class="note"><strong>Next steps:</strong><br>1. Sign in with your email and password<br>2. Verify the 2FA code sent to your email<br>3. Submit KYC documents (ID + proof of address)<br>4. Trading enables once KYC is approved by admin</div>
+      <p style="font-size:12px;color:var(--text3)">You can switch to Google Authenticator in your security settings after logging in.</p>
+      <a href="/index.html" class="sbtn" style="display:inline-block;text-decoration:none;text-align:center;margin-top:16px">Sign In to Continue &#x2192;</a>
+    </div>
+  </div>
+</div>
+<script>
+const API=window.location.origin+'/api/v1';
+function checkPw(){const pw=document.getElementById('signupPw').value,bar=document.getElementById('pwBar');let s=0;if(pw.length>=8)s++;if(pw.length>=12)s++;if(/[A-Z]/.test(pw))s++;if(/[0-9]/.test(pw))s++;if(/[^A-Za-z0-9]/.test(pw))s++;const p=Math.min(s/5*100,100),c=['#ef4444','#f97316','#eab308','#10b981','#10b981'];bar.style.width=p+'%';bar.style.background=c[Math.min(s,4)];}
+function showErr(m){const e=document.getElementById('signupErr');e.textContent=m;e.style.display='block';}
+async function doSignup(){
+  const fn=document.getElementById('firstName').value.trim(),ln=document.getElementById('lastName').value.trim(),
+    em=document.getElementById('signupEmail').value.trim(),pw=document.getElementById('signupPw').value,
+    pc=document.getElementById('signupPwC').value,co=document.getElementById('country').value,
+    ct=document.getElementById('clientType').value,ag=document.getElementById('agreeTerms').checked,
+    btn=document.getElementById('submitBtn');
+  document.getElementById('signupErr').style.display='none';
+  if(!fn||!ln){showErr('Please enter your full name');return;}
+  if(!em||!em.includes('@')){showErr('Please enter a valid email');return;}
+  if(pw.length<8){showErr('Password must be at least 8 characters');return;}
+  if(!/[A-Z]/.test(pw)){showErr('Password needs at least one uppercase letter');return;}
+  if(!/[0-9]/.test(pw)){showErr('Password needs at least one number');return;}
+  if(pw!==pc){showErr('Passwords do not match');return;}
+  if(!co){showErr('Please select your country');return;}
+  if(!ag){showErr('You must agree to the Terms of Service');return;}
+  btn.textContent='Creating account...';btn.disabled=true;
+  try{
+    const res=await fetch(API+'/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:pw,firstName:fn,lastName:ln,countryOfResidence:co,clientType:ct})});
+    const data=await res.json();
+    if(!res.ok){btn.textContent='Create Account';btn.disabled=false;showErr(data.error||'Registration failed');return;}
+    document.getElementById('signupForm').style.display='none';document.getElementById('signupOk').style.display='block';
+  }catch(e){btn.textContent='Create Account';btn.disabled=false;showErr('Unable to connect. Please try again.');}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('signupForm').style.display!=='none')doSignup();});
+</script>
+</body>
+</html>

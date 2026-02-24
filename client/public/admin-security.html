@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>T1 Broker — Security Center</title>
+<style>
+:root{--bg:#0a0f1c;--bg2:#111827;--bg3:#1e293b;--card:#151d2e;--border:#1e293b;--text:#f0f4ff;--text2:#94a3b8;--text3:#64748b;--blue:#3b82f6;--blue2:#2563eb;--green:#22c55e;--red:#ef4444;--yellow:#eab308;--purple:#a855f7;--orange:#f97316;--cyan:#06b6d4;--radius:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.app{display:flex;height:100vh}
+
+.sidebar{width:240px;background:var(--bg2);border-right:1px solid var(--border);padding:16px 12px;flex-shrink:0;overflow-y:auto;display:flex;flex-direction:column}
+.sidebar h2{color:var(--red);font-size:15px;padding:8px;margin-bottom:8px;font-family:'Courier New',monospace}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;color:var(--text2);font-size:13px;transition:all .15s;margin-bottom:2px;text-decoration:none}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:rgba(239,68,68,.12);color:var(--red)}
+
+.main{flex:1;overflow-y:auto;padding:24px 32px}
+h1{font-size:22px;font-weight:700;margin-bottom:4px}
+.subtitle{color:var(--text3);font-size:13px;margin-bottom:24px}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px}
+.stat-label{font-size:10px;text-transform:uppercase;color:var(--text3);font-weight:600;letter-spacing:.5px;margin-bottom:4px}
+.stat-value{font-size:26px;font-weight:700;line-height:1.2}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:4px}
+.stat-value.green{color:var(--green)}.stat-value.blue{color:var(--blue)}.stat-value.yellow{color:var(--yellow)}.stat-value.red{color:var(--red)}.stat-value.cyan{color:var(--cyan)}.stat-value.purple{color:var(--purple)}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.card-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 12px;color:var(--text3);font-weight:600;font-size:11px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:hover td{background:rgba(255,255,255,.02)}
+.mono{font-family:'Courier New',monospace;font-size:12px}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge.green{background:rgba(34,197,94,.12);color:var(--green)}
+.badge.red{background:rgba(239,68,68,.12);color:var(--red)}
+.badge.yellow{background:rgba(234,179,8,.12);color:var(--yellow)}
+.badge.blue{background:rgba(59,130,246,.12);color:var(--blue)}
+.badge.gray{background:rgba(100,116,139,.12);color:var(--text3)}
+.badge.cyan{background:rgba(6,182,212,.12);color:var(--cyan)}
+.badge.purple{background:rgba(168,85,247,.12);color:var(--purple)}
+.badge.orange{background:rgba(249,115,22,.12);color:var(--orange)}
+
+.btn{padding:7px 16px;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn-primary{background:var(--blue);color:white}.btn-primary:hover:not(:disabled){background:var(--blue2)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}.btn-ghost:hover{background:var(--bg3)}
+.btn-green{background:rgba(34,197,94,.15);color:var(--green)}.btn-green:hover{background:rgba(34,197,94,.25)}
+.btn-red{background:rgba(239,68,68,.1);color:var(--red)}.btn-red:hover{background:rgba(239,68,68,.2)}
+.btn-yellow{background:rgba(234,179,8,.1);color:var(--yellow)}.btn-yellow:hover{background:rgba(234,179,8,.2)}
+
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.dot.green{background:var(--green)}.dot.red{background:var(--red)}.dot.yellow{background:var(--yellow)}
+
+.threat-bar{height:6px;border-radius:3px;background:var(--bg3);overflow:hidden;min-width:80px}
+.threat-fill{height:100%;border-radius:3px;transition:width .3s}
+
+input[type=text],input[type=number],select{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 12px;font-size:13px;outline:none}
+input:focus,select:focus{border-color:var(--blue)}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;width:90%;max-width:500px}
+.modal h3{font-size:16px;margin-bottom:16px}
+
+.tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:0}
+.tab{padding:10px 18px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--red);border-bottom-color:var(--red)}
+
+.toast{position:fixed;bottom:24px;right:24px;background:var(--green);color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;opacity:0;transform:translateY(20px);transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}.toast.error{background:var(--red)}
+
+.pulse{animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@media(max-width:900px){.sidebar{display:none}.main{padding:16px}.stat-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <h2>🛡️ Security Center</h2>
+    <div id="nav-section">
+      <div class="nav-item active" onclick="showTab('overview')">📊 Overview</div>
+      <div class="nav-item" onclick="showTab('blocklist')">🚫 IP Blocklist</div>
+      <div class="nav-item" onclick="showTab('threats')">⚡ Threat Scores</div>
+      <div class="nav-item" onclick="showTab('events')">📋 Security Events</div>
+      <div class="nav-item" onclick="showTab('sessions')">👤 Active Sessions</div>
+    </div>
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+      <a href="/admin-settings.html" class="nav-item">🎛️ Platform Settings</a>
+      <a href="/admin-config.html" class="nav-item">⚙️ Configuration</a>
+      <a href="/admin-backups.html" class="nav-item">💾 Database Archives</a>
+    </div>
+    <div style="margin-top:auto;padding:16px 8px;border-top:1px solid var(--border)">
+      <a href="/" style="color:var(--text3);text-decoration:none;font-size:12px">← Back to Dashboard</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+      <div>
+        <h1>🛡️ Security Center</h1>
+        <p class="subtitle">Real-time threat monitoring, IP management, WAF controls, and session oversight.</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <span id="live-dot" class="dot green pulse" style="margin-top:3px"></span>
+        <span style="font-size:12px;color:var(--text3)">Live — refreshes every 15s</span>
+      </div>
+    </div>
+
+    <div id="content"></div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api/v1/admin/security';
+let token = localStorage.getItem('t1_access') || '';
+let currentTab = 'overview';
+let refreshTimer = null;
+
+function headers() {
+  return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+}
+async function api(method, path, body) {
+  const opts = { method, headers: headers() };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(`${API}${path}`, opts);
+  if (r.status === 401) { window.location.href = '/?session=expired'; return {}; }
+  return r.json();
+}
+function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; }
+function timeAgo(ts) {
+  if (!ts) return '';
+  const d = Date.now() - new Date(ts).getTime();
+  if (d < 60000) return 'just now';
+  if (d < 3600000) return Math.floor(d / 60000) + 'm ago';
+  if (d < 86400000) return Math.floor(d / 3600000) + 'h ago';
+  return Math.floor(d / 86400000) + 'd ago';
+}
+function toast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show' + (type === 'error' ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// ── Tab navigation ──
+function showTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.nav-item').forEach((el, i) => {
+    if (i < 5) el.className = 'nav-item' + (['overview','blocklist','threats','events','sessions'][i] === tab ? ' active' : '');
+  });
+  render();
+}
+
+async function render() {
+  const el = document.getElementById('content');
+  try {
+    switch (currentTab) {
+      case 'overview': return await renderOverview(el);
+      case 'blocklist': return await renderBlocklist(el);
+      case 'threats': return await renderThreats(el);
+      case 'events': return await renderEvents(el);
+      case 'sessions': return await renderSessions(el);
+    }
+  } catch (err) {
+    el.innerHTML = `<div class="card" style="color:var(--red)">Failed to load: ${esc(err.message)}</div>`;
+  }
+}
+
+// ═══════════════════════════════════════
+//  OVERVIEW TAB
+// ═══════════════════════════════════════
+async function renderOverview(el) {
+  const d = await api('GET', '/dashboard');
+  const severityColor = d.criticalEvents24h > 0 ? 'red' : d.securityEvents24h > 10 ? 'yellow' : 'green';
+  const statusLabel = d.criticalEvents24h > 0 ? 'THREATS DETECTED' : d.securityEvents24h > 10 ? 'ELEVATED ACTIVITY' : 'ALL CLEAR';
+
+  el.innerHTML = `
+    <div class="card" style="border-color:var(--${severityColor});border-width:2px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="dot ${severityColor} pulse" style="width:12px;height:12px"></span>
+        <div>
+          <div style="font-size:16px;font-weight:700;color:var(--${severityColor})">${statusLabel}</div>
+          <div style="font-size:12px;color:var(--text3)">Last 24 hours threat assessment</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Security Events (24h)</div>
+        <div class="stat-value ${d.securityEvents24h > 20 ? 'yellow' : 'blue'}">${d.securityEvents24h}</div>
+        <div class="stat-sub">All severity levels</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Critical Alerts</div>
+        <div class="stat-value ${d.criticalEvents24h > 0 ? 'red' : 'green'}">${d.criticalEvents24h}</div>
+        <div class="stat-sub">Last 24 hours</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Failed Logins</div>
+        <div class="stat-value ${d.failedLogins24h > 10 ? 'yellow' : 'cyan'}">${d.failedLogins24h}</div>
+        <div class="stat-sub">Brute-force indicator</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">WAF Blocks</div>
+        <div class="stat-value ${d.wafBlocks24h > 0 ? 'orange' : 'green'}">${d.wafBlocks24h}</div>
+        <div class="stat-sub">Attack patterns caught</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Blocked IPs</div>
+        <div class="stat-value red">${d.blockedIPs}</div>
+        <div class="stat-sub">Currently banned</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">High Threat IPs</div>
+        <div class="stat-value ${d.highThreatIPs > 0 ? 'yellow' : 'green'}">${d.highThreatIPs}</div>
+        <div class="stat-sub">Score ≥ 50</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active Sessions</div>
+        <div class="stat-value blue">${d.activeSessions}</div>
+        <div class="stat-sub">Logged-in users</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🧱 Defense Layers Active</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
+        ${[
+          ['🔥 API Firewall (WAF)', '19 attack patterns', 'green'],
+          ['🛡️ Response Sanitizer', '30+ fields stripped', 'green'],
+          ['🔒 AES-256-GCM Encryption', 'Authenticated', 'green'],
+          ['🚦 Rate Limiting', '5 endpoint tiers', 'green'],
+          ['🕵️ Anomaly Detector', 'Credential stuffing', 'green'],
+          ['🔄 Replay Protection', 'Nonce-based', 'green'],
+          ['📊 Threat Scoring', 'Auto-ban at 100', 'green'],
+          ['🔍 Query Interceptor', 'SQL op blocking', 'green'],
+          ['🪪 CSRF Protection', 'Double-submit', 'green'],
+          ['📡 IP Reputation', 'Dynamic blocklist', 'green'],
+        ].map(([name, desc, color]) => `
+          <div style="background:var(--bg3);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+            <span class="dot ${color}"></span>
+            <div>
+              <div style="font-size:12px;font-weight:600">${name}</div>
+              <div style="font-size:10px;color:var(--text3)">${desc}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════
+//  IP BLOCKLIST TAB
+// ═══════════════════════════════════════
+async function renderBlocklist(el) {
+  const { data: ips } = await api('GET', '/blocked-ips');
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🚫 IP Blocklist <span class="badge red">${ips.length} blocked</span></div>
+        <button class="btn btn-red" onclick="showBlockIPModal()">+ Block IP</button>
+      </div>
+      ${ips.length === 0 ? '<p style="color:var(--text3);text-align:center;padding:20px">No IPs currently blocked</p>' : `
+        <table>
+          <thead><tr><th>IP Address</th><th>Reason</th><th>Expires In</th><th>Actions</th></tr></thead>
+          <tbody>
+            ${ips.map(ip => `<tr>
+              <td class="mono">${esc(ip.ip)}</td>
+              <td style="font-size:12px;color:var(--text2)">${esc(ip.reason)}</td>
+              <td>${ip.expiresIn ? formatDuration(ip.expiresIn) : '<span class="badge gray">permanent</span>'}</td>
+              <td><button class="btn btn-sm btn-green" onclick="unblockIP('${esc(ip.ip)}')">Unblock</button></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      `}
+    </div>
+  `;
+}
+
+function formatDuration(seconds) {
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
+  return `${Math.floor(seconds / 86400)}d ${Math.floor((seconds % 86400) / 3600)}h`;
+}
+
+function showBlockIPModal() {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  overlay.innerHTML = `<div class="modal">
+    <h3>🚫 Block IP Address</h3>
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">IP Address</label>
+      <input type="text" id="block-ip-input" placeholder="e.g. 203.0.113.50" style="width:100%">
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Reason</label>
+      <input type="text" id="block-reason-input" placeholder="e.g. Repeated brute-force attempts" style="width:100%">
+    </div>
+    <div style="margin-bottom:20px">
+      <label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Duration (hours)</label>
+      <input type="number" id="block-duration-input" value="24" min="1" max="720" style="width:120px">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+      <button class="btn btn-red" onclick="doBlockIP()">Block IP</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('block-ip-input').focus();
+}
+
+async function doBlockIP() {
+  const ip = document.getElementById('block-ip-input').value.trim();
+  const reason = document.getElementById('block-reason-input').value.trim();
+  const hours = parseInt(document.getElementById('block-duration-input').value) || 24;
+  if (!ip) return toast('Enter an IP address', 'error');
+
+  const result = await api('POST', '/block-ip', { ip, reason, durationHours: hours });
+  if (result.success) {
+    toast(`🚫 Blocked ${ip} for ${hours}h`);
+    document.querySelector('.modal-overlay')?.remove();
+    render();
+  } else {
+    toast(result.error || 'Failed to block IP', 'error');
+  }
+}
+
+async function unblockIP(ip) {
+  if (!confirm(`Unblock ${ip}?`)) return;
+  const result = await api('DELETE', `/block-ip/${ip}`);
+  if (result.success) { toast(`✅ Unblocked ${ip}`); render(); }
+  else toast('Failed to unblock', 'error');
+}
+
+// ═══════════════════════════════════════
+//  THREAT SCORES TAB
+// ═══════════════════════════════════════
+async function renderThreats(el) {
+  const { data: threats } = await api('GET', '/threat-scores');
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚡ Active Threat Scores <span class="badge ${threats.length > 0 ? 'yellow' : 'green'}">${threats.length} tracked</span></div>
+        ${threats.length > 0 ? '<button class="btn btn-sm btn-yellow" onclick="flushThreats()">🗑️ Clear All</button>' : ''}
+      </div>
+      <p style="color:var(--text3);font-size:12px;margin-bottom:16px">IPs accumulate threat points per attack pattern. Score ≥ 100 triggers auto-ban. Scores decay after 1 hour.</p>
+      ${threats.length === 0 ? '<p style="color:var(--green);text-align:center;padding:20px;font-size:14px">✅ No active threats</p>' : `
+        <table>
+          <thead><tr><th>IP Address</th><th>Score</th><th>Severity</th><th>TTL</th><th>Actions</th></tr></thead>
+          <tbody>
+            ${threats.map(t => {
+              const pct = Math.min(t.score, 100);
+              const color = t.score >= 100 ? 'var(--red)' : t.score >= 50 ? 'var(--yellow)' : 'var(--blue)';
+              return `<tr>
+                <td class="mono">${esc(t.ip)}</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div class="threat-bar"><div class="threat-fill" style="width:${pct}%;background:${color}"></div></div>
+                    <span style="font-size:12px;font-weight:700;color:${color}">${t.score}</span>
+                  </div>
+                </td>
+                <td><span class="badge ${t.severity === 'critical' ? 'red' : t.severity === 'high' ? 'yellow' : 'blue'}">${t.severity}</span></td>
+                <td style="font-size:12px;color:var(--text3)">${formatDuration(t.ttl)}</td>
+                <td>
+                  <button class="btn btn-sm btn-ghost" onclick="resetThreat('${esc(t.ip)}')">Reset</button>
+                  <button class="btn btn-sm btn-red" onclick="doBlockIP_quick('${esc(t.ip)}')">Ban</button>
+                </td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      `}
+    </div>
+  `;
+}
+
+async function resetThreat(ip) {
+  await api('POST', `/reset-threat/${ip}`);
+  toast(`Reset threat score for ${ip}`);
+  render();
+}
+
+async function doBlockIP_quick(ip) {
+  if (!confirm(`Block ${ip} for 24 hours?`)) return;
+  await api('POST', '/block-ip', { ip, reason: 'Manual ban from threat dashboard', durationHours: 24 });
+  toast(`🚫 Blocked ${ip}`);
+  render();
+}
+
+async function flushThreats() {
+  if (!confirm('Clear ALL threat scores and IP blocks? This cannot be undone.')) return;
+  await api('POST', '/flush-threats');
+  toast('All threats cleared');
+  render();
+}
+
+// ═══════════════════════════════════════
+//  SECURITY EVENTS TAB
+// ═══════════════════════════════════════
+async function renderEvents(el) {
+  const { data: events } = await api('GET', '/events?limit=100');
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📋 Security Events <span class="badge blue">${events.length}</span></div>
+        <div style="display:flex;gap:8px">
+          <select id="level-filter" onchange="filterEvents()" style="padding:6px 10px;font-size:12px">
+            <option value="">All Levels</option>
+            <option value="critical">🔴 Critical</option>
+            <option value="warning">🟡 Warning</option>
+            <option value="info">🔵 Info</option>
+          </select>
+        </div>
+      </div>
+      <div id="events-table">
+        ${renderEventsTable(events)}
+      </div>
+    </div>
+  `;
+}
+
+function renderEventsTable(events) {
+  if (!events.length) return '<p style="color:var(--text3);text-align:center;padding:20px">No security events</p>';
+  return `<div style="max-height:500px;overflow-y:auto">
+    <table>
+      <thead><tr><th>Time</th><th>Level</th><th>Event</th><th>IP</th></tr></thead>
+      <tbody>
+        ${events.map(e => `<tr>
+          <td style="font-size:11px;color:var(--text3);white-space:nowrap">${timeAgo(e.created_at)}</td>
+          <td><span class="badge ${e.level === 'critical' ? 'red' : e.level === 'warning' ? 'yellow' : 'blue'}">${e.level}</span></td>
+          <td style="font-size:12px;max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(e.action)}</td>
+          <td class="mono" style="font-size:11px">${esc(e.ip_address || '—')}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+async function filterEvents() {
+  const level = document.getElementById('level-filter').value;
+  const { data: events } = await api('GET', `/events?limit=100${level ? '&level=' + level : ''}`);
+  document.getElementById('events-table').innerHTML = renderEventsTable(events);
+}
+
+// ═══════════════════════════════════════
+//  SESSIONS TAB
+// ═══════════════════════════════════════
+async function renderSessions(el) {
+  const { data: sessions } = await api('GET', '/sessions');
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">👤 Active Sessions <span class="badge blue">${sessions.length}</span></div>
+        <button class="btn btn-sm btn-red" onclick="revokeAllSessions()">🔴 Revoke All</button>
+      </div>
+      ${sessions.length === 0 ? '<p style="color:var(--text3);text-align:center;padding:20px">No active sessions</p>' : `
+        <div style="max-height:500px;overflow-y:auto">
+          <table>
+            <thead><tr><th>User</th><th>Role</th><th>IP</th><th>Last Active</th><th>Expires</th><th>Actions</th></tr></thead>
+            <tbody>
+              ${sessions.map(s => `<tr>
+                <td style="font-size:12px">${esc(s.email)}</td>
+                <td><span class="badge ${s.role === 'super_admin' ? 'red' : s.role === 'admin' ? 'purple' : 'gray'}">${esc(s.role)}</span></td>
+                <td class="mono" style="font-size:11px">${esc(s.ip_address || '—')}</td>
+                <td style="font-size:11px;color:var(--text3)">${timeAgo(s.last_active_at || s.created_at)}</td>
+                <td style="font-size:11px;color:var(--text3)">${timeAgo(s.expires_at)}</td>
+                <td><button class="btn btn-sm btn-red" onclick="revokeSession('${s.id}','${esc(s.email)}')">Revoke</button></td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      `}
+    </div>
+  `;
+}
+
+async function revokeSession(id, email) {
+  if (!confirm(`Revoke session for ${email}? They will be logged out immediately.`)) return;
+  const r = await api('POST', `/revoke-session/${id}`);
+  if (r.success) { toast(`Session revoked for ${email}`); render(); }
+  else toast('Failed', 'error');
+}
+
+async function revokeAllSessions() {
+  if (!confirm('REVOKE ALL SESSIONS?\n\nThis will log out every user including yourself.\nAre you sure?')) return;
+  const r = await api('POST', '/revoke-all-sessions');
+  if (r.success) { toast(`🔴 ${r.revoked} sessions revoked`); render(); }
+  else toast('Failed', 'error');
+}
+
+// ── Auto-refresh ──
+function startRefresh() {
+  if (refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(() => render(), 15000);
+}
+
+render();
+startRefresh();
+</script>
+</body>
+</html>

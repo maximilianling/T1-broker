@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>T1 Broker — Admin Configuration</title>
+<style>
+:root{--bg:#0a0f1c;--bg2:#111827;--bg3:#1e293b;--card:#151d2e;--border:#1e293b;--text:#f0f4ff;--text2:#94a3b8;--text3:#64748b;--blue:#3b82f6;--blue2:#2563eb;--green:#22c55e;--red:#ef4444;--yellow:#eab308;--purple:#a855f7;--radius:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.app{display:flex;height:100vh}
+.sidebar{width:240px;background:var(--bg2);border-right:1px solid var(--border);padding:16px 12px;flex-shrink:0;overflow-y:auto}
+.sidebar h2{color:var(--blue);font-size:15px;padding:8px;margin-bottom:8px;font-family:'Courier New',monospace}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;color:var(--text2);font-size:13px;transition:all .15s;margin-bottom:2px}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:rgba(59,130,246,.12);color:var(--blue)}
+.main{flex:1;overflow-y:auto;padding:24px 32px}
+h1{font-size:22px;font-weight:700;margin-bottom:4px}
+.subtitle{color:var(--text3);font-size:13px;margin-bottom:24px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card-title{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.grid{display:grid;gap:12px}
+.grid-2{grid-template-columns:1fr 1fr}
+.grid-3{grid-template-columns:1fr 1fr 1fr}
+.grid-4{grid-template-columns:1fr 1fr 1fr 1fr}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 12px;color:var(--text3);font-weight:600;font-size:11px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge.green{background:rgba(34,197,94,.12);color:var(--green)}
+.badge.red{background:rgba(239,68,68,.12);color:var(--red)}
+.badge.yellow{background:rgba(234,179,8,.12);color:var(--yellow)}
+.badge.blue{background:rgba(59,130,246,.12);color:var(--blue)}
+.badge.gray{background:rgba(100,116,139,.12);color:var(--text3)}
+.dot{width:6px;height:6px;border-radius:3px;display:inline-block}
+.dot.green{background:var(--green)}.dot.red{background:var(--red)}.dot.yellow{background:var(--yellow)}
+input,select,textarea{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px;width:100%;outline:none}
+input:focus,select:focus{border-color:var(--blue)}
+label{display:block;font-size:12px;color:var(--text3);margin-bottom:4px;font-weight:500}
+.btn{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s}
+.btn-primary{background:var(--blue);color:white}.btn-primary:hover{background:var(--blue2)}
+.btn-green{background:var(--green);color:white}
+.btn-red{background:var(--red);color:white}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}.btn-ghost:hover{background:var(--bg3)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.flex{display:flex;gap:8px;align-items:center}
+.flex-between{display:flex;justify-content:space-between;align-items:center}
+.mt{margin-top:16px}.mb{margin-bottom:12px}
+.mono{font-family:'Courier New',monospace;font-size:12px}
+.section-title{font-size:12px;text-transform:uppercase;color:var(--text3);font-weight:700;letter-spacing:.5px;margin:20px 0 8px}
+.empty{text-align:center;padding:40px;color:var(--text3)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;min-width:420px;max-width:560px;max-height:80vh;overflow-y:auto}
+.modal h3{font-size:16px;margin-bottom:16px}
+.form-group{margin-bottom:12px}
+.toggle{position:relative;width:40px;height:22px;background:var(--bg3);border-radius:11px;cursor:pointer}
+.toggle.on{background:var(--blue)}
+.toggle::after{content:'';position:absolute;width:18px;height:18px;border-radius:9px;background:white;top:2px;left:2px;transition:.2s}
+.toggle.on::after{left:20px}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle .slider{position:absolute;inset:0;background:var(--bg3);border-radius:11px;transition:.2s}
+.toggle .slider:before{content:'';position:absolute;width:18px;height:18px;left:2px;bottom:2px;background:var(--text3);border-radius:50%;transition:.2s}
+.toggle input:checked+.slider{background:var(--blue)}
+.toggle input:checked+.slider:before{transform:translateX(18px);background:white}
+@media(max-width:768px){.sidebar{display:none}.main{padding:16px}.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <h2>⚙️ T1 Config</h2>
+    <div class="nav-item active" onclick="showTab('providers')">📡 Market Data Providers</div>
+    <div class="nav-item" onclick="showTab('brokerages')">🏦 Brokerage Connectors</div>
+    <div class="nav-item" onclick="showTab('wallets')">🔐 Crypto Wallets</div>
+    <div class="nav-item" onclick="showTab('instruments')">📊 Custom Instruments</div>
+    <div class="nav-item" onclick="showTab('clearing')">⚖️ Clearing & Settlement</div>
+    <a class="nav-item" href="/admin-backups.html" style="text-decoration:none;color:var(--text2)">💾 Database Archives</a>
+    <a class="nav-item" href="/admin-security.html" style="text-decoration:none;color:var(--text2)">🛡️ Security Center</a>
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+      <a href="/admin-settings.html" class="nav-item" style="text-decoration:none;color:var(--text2)">🎛️ Platform Settings</a>
+    </div>
+    <div style="margin-top:auto;padding:16px 8px;border-top:1px solid var(--border)">
+      <a href="/" style="color:var(--text3);text-decoration:none;font-size:12px">← Back to Dashboard</a>
+    </div>
+  </nav>
+
+  <main class="main" id="content"></main>
+</div>
+
+<script>
+const API = '/api/v1/admin/config';
+let token = localStorage.getItem('t1_access') || '';
+let currentTab = 'providers';
+
+async function api(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(`${API}${path}`, opts);
+  if (res.status === 401) {
+    token = '';
+    document.getElementById('content').innerHTML = '<div class="empty"><h2>Session Expired</h2><p>Please <a href="/" style="color:var(--blue)">log in</a> and return to this page.</p></div>';
+    throw new Error('Unauthorized');
+  }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(err.error || `API error: ${res.status}`);
+  }
+  return res.json();
+}
+
+function showTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  event?.target?.classList?.add('active');
+  document.querySelectorAll('.nav-item').forEach((el, i) => {
+    if (['providers','brokerages','wallets','instruments','clearing'][i] === tab) el.classList.add('active');
+  });
+  render();
+}
+
+async function render() {
+  const el = document.getElementById('content');
+  try {
+    switch (currentTab) {
+      case 'providers': return await renderProviders(el);
+      case 'brokerages': return await renderBrokerages(el);
+      case 'wallets': return await renderWallets(el);
+      case 'instruments': return await renderInstruments(el);
+      case 'clearing': return await renderClearing(el);
+    }
+  } catch (err) {
+    if (err.message === 'Unauthorized') return;
+    el.innerHTML = `<div class="card" style="border-color:var(--red)">
+      <div class="card-title" style="color:var(--red)">⚠️ Error Loading Data</div>
+      <p style="color:var(--text2);font-size:13px">${err.message}</p>
+      <button class="btn btn-ghost btn-sm mt" onclick="render()">Retry</button>
+    </div>`;
+  }
+}
+
+// ================================================================
+// MARKET DATA PROVIDERS
+// ================================================================
+async function renderProviders(el) {
+  const { data: providers } = await api('GET', '/providers');
+  el.innerHTML = `
+    <h1>Market Data Providers</h1>
+    <p class="subtitle">Configure which APIs provide real-time market data. Set API keys, prioritize providers, and monitor health.</p>
+    <div class="flex-between mb">
+      <div class="flex">
+        <button class="btn btn-primary btn-sm" onclick="healthCheckAll()">🔍 Health Check All</button>
+      </div>
+      <span style="color:var(--text3);font-size:12px">${providers?.filter(p=>p.status==='active').length || 0} active of ${providers?.length || 0}</span>
+    </div>
+    <table>
+      <thead><tr><th>Provider</th><th>Type</th><th>Supports</th><th>Status</th><th>API Key</th><th>Priority</th><th>Requests Today</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${(providers||[]).map(p => `<tr>
+          <td><strong>${p.display_name}</strong><br><span class="mono" style="color:var(--text3)">${p.provider_code}</span></td>
+          <td><span class="badge blue">${p.provider_type}</span></td>
+          <td class="flex" style="flex-wrap:wrap;gap:4px">
+            ${p.supports_stocks ? '<span class="badge gray">Stocks</span>' : ''}
+            ${p.supports_crypto ? '<span class="badge gray">Crypto</span>' : ''}
+            ${p.supports_forex ? '<span class="badge gray">Forex</span>' : ''}
+            ${p.supports_websocket ? '<span class="badge gray">WS</span>' : ''}
+          </td>
+          <td><span class="badge ${p.status==='active'?'green':p.status==='error'?'red':'yellow'}"><span class="dot ${p.status==='active'?'green':p.status==='error'?'red':'yellow'}"></span> ${p.status}</span></td>
+          <td>${p.has_api_key ? '<span class="badge green">Configured</span>' : '<span class="badge red">Not Set</span>'}</td>
+          <td class="mono">${p.priority}</td>
+          <td class="mono">${p.requests_today||0}</td>
+          <td class="flex">
+            <button class="btn btn-ghost btn-sm" onclick="showApiKeyModal('${p.id}','${p.display_name}','${p.provider_code}')">🔑 Key</button>
+            <button class="btn btn-ghost btn-sm" onclick="testProvider('${p.id}')">Test</button>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function showApiKeyModal(id, name, code) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  overlay.innerHTML = `<div class="modal">
+    <h3>🔑 Configure API Key — ${name}</h3>
+    <div class="form-group"><label>API Key</label><input id="mk-key" type="password" placeholder="Enter API key"></div>
+    <div class="form-group"><label>API Secret (optional)</label><input id="mk-secret" type="password" placeholder="Enter API secret"></div>
+    <p style="font-size:11px;color:var(--text3);margin:8px 0">Keys are encrypted (AES-256) before storage.</p>
+    <div class="flex" style="justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+      <button class="btn btn-red btn-sm" onclick="removeApiKey('${id}',this)">Remove Key</button>
+      <button class="btn btn-primary" onclick="saveApiKey('${id}',this)">Save & Activate</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+async function saveApiKey(id, btn) {
+  const key = document.getElementById('mk-key').value;
+  const secret = document.getElementById('mk-secret').value;
+  if (!key) return alert('API key is required');
+  btn.textContent = 'Saving...';
+  await api('POST', `/providers/${id}/apikey`, { apiKey: key, apiSecret: secret || undefined });
+  btn.closest('.modal-overlay').remove();
+  render();
+}
+
+async function removeApiKey(id, btn) {
+  if (!confirm('Remove API key? Provider will be deactivated.')) return;
+  await api('DELETE', `/providers/${id}/apikey`);
+  btn.closest('.modal-overlay').remove();
+  render();
+}
+
+async function healthCheckAll() {
+  const { data } = await api('POST', '/providers/health-check');
+  alert('Health Check Results:\n\n' + (data||[]).map(r => `${r.code}: ${r.status}${r.latency ? ` (${r.latency}ms)` : ''}`).join('\n'));
+  render();
+}
+
+async function testProvider(id) {
+  const result = await api('POST', `/providers/${id}/test`, { symbol: 'AAPL' });
+  alert(result.success ? `✅ Success! Last: $${result.quote?.last} (${result.latencyMs}ms)` : `❌ Failed: ${result.error || 'No data'}`);
+}
+
+// ================================================================
+// BROKERAGE CONNECTORS
+// ================================================================
+async function renderBrokerages(el) {
+  const { data: connectors } = await api('GET', '/brokerages');
+  el.innerHTML = `
+    <h1>Brokerage Connectors</h1>
+    <p class="subtitle">Manage API credentials and connections to underlying brokerages for order routing.</p>
+    <div class="flex-between mb"><button class="btn btn-primary btn-sm" onclick="showAddBrokerageModal()">+ Add Connector</button></div>
+    <div class="grid grid-2">
+      ${(connectors||[]).map(c => `<div class="card">
+        <div class="flex-between mb">
+          <div class="card-title">${c.display_name}</div>
+          <span class="badge ${c.status==='connected'?'green':c.status==='error'?'red':'yellow'}"><span class="dot ${c.status==='connected'?'green':c.status==='error'?'red':'yellow'}"></span> ${c.status}</span>
+        </div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:12px">
+          <div>Env: <strong style="color:${c.environment==='production'?'var(--green)':'var(--yellow)'}">${c.environment}</strong></div>
+          <div>Auth: ${c.auth_type} ${c.has_credentials?'✅':'❌'} ${c.has_oauth?'(OAuth ✅)':''}</div>
+          ${c.omnibus_account_id ? `<div>Omnibus: <span class="mono">${c.omnibus_account_id}</span></div>` : ''}
+          ${c.latency_ms ? `<div>Latency: ${c.latency_ms}ms</div>` : ''}
+        </div>
+        <div class="flex" style="flex-wrap:wrap;gap:4px;margin-bottom:12px">
+          ${c.supports_equities?'<span class="badge gray">Equities</span>':''}
+          ${c.supports_options?'<span class="badge gray">Options</span>':''}
+          ${c.supports_futures?'<span class="badge gray">Futures</span>':''}
+          ${c.supports_forex?'<span class="badge gray">Forex</span>':''}
+          ${c.supports_crypto?'<span class="badge gray">Crypto</span>':''}
+          ${c.supports_fractional?'<span class="badge gray">Fractional</span>':''}
+        </div>
+        <div class="flex">
+          <button class="btn btn-ghost btn-sm" onclick="showBrokerageCredentials('${c.id}','${c.display_name}')">🔑 Credentials</button>
+          <button class="btn btn-ghost btn-sm" onclick="testBrokerage('${c.id}')">Test</button>
+          ${c.docs_url?`<a href="${c.docs_url}" target="_blank" class="btn btn-ghost btn-sm">📄 Docs</a>`:''}
+        </div>
+      </div>`).join('')}
+    </div>`;
+}
+
+function showBrokerageCredentials(id, name) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  overlay.innerHTML = `<div class="modal">
+    <h3>🔑 ${name} — Credentials</h3>
+    <div class="form-group"><label>API Key / Client ID</label><input id="bk-key" type="password" placeholder="API Key"></div>
+    <div class="form-group"><label>API Secret</label><input id="bk-secret" type="password" placeholder="API Secret"></div>
+    <div class="form-group"><label>Omnibus Account ID</label><input id="bk-omnibus" placeholder="Account ID for omnibus operations"></div>
+    <div class="form-group"><label>Omnibus Account Name</label><input id="bk-omnibus-name" placeholder="e.g., T1 Broker Master Account"></div>
+    <div class="form-group"><label>Environment</label>
+      <select id="bk-env"><option value="sandbox">Sandbox</option><option value="production">Production</option></select>
+    </div>
+    <div class="form-group"><label>Webhook URL</label><input id="bk-webhook" placeholder="https://api.t1broker.com/webhooks/broker"></div>
+    <div class="form-group"><label>Webhook Secret</label><input id="bk-webhook-secret" type="password" placeholder="Webhook HMAC secret"></div>
+    <div class="flex" style="justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBrokerageCredentials('${id}',this)">Save Credentials</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+async function saveBrokerageCredentials(id, btn) {
+  btn.textContent = 'Saving...';
+  await api('POST', `/brokerages/${id}/credentials`, {
+    apiKey: document.getElementById('bk-key').value || undefined,
+    apiSecret: document.getElementById('bk-secret').value || undefined,
+    omnibusAccountId: document.getElementById('bk-omnibus').value || undefined,
+    omnibusAccountName: document.getElementById('bk-omnibus-name').value || undefined,
+    environment: document.getElementById('bk-env').value,
+    webhookUrl: document.getElementById('bk-webhook').value || undefined,
+    webhookSecret: document.getElementById('bk-webhook-secret').value || undefined,
+  });
+  btn.closest('.modal-overlay').remove();
+  render();
+}
+
+function showAddBrokerageModal() {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  overlay.innerHTML = `<div class="modal">
+    <h3>🏦 Add Brokerage Connector</h3>
+    <div class="grid grid-2">
+      <div class="form-group"><label>Connector Code</label><input id="ab-code" placeholder="e.g., my_broker"></div>
+      <div class="form-group"><label>Display Name</label><input id="ab-name" placeholder="e.g., My Brokerage"></div>
+      <div class="form-group"><label>Base URL</label><input id="ab-url" placeholder="https://api.broker.com"></div>
+      <div class="form-group"><label>WebSocket URL</label><input id="ab-ws" placeholder="wss://ws.broker.com"></div>
+      <div class="form-group"><label>Sandbox URL</label><input id="ab-sandbox" placeholder="https://sandbox.broker.com"></div>
+      <div class="form-group"><label>Auth Type</label>
+        <select id="ab-auth"><option value="api_key">API Key</option><option value="oauth2">OAuth2</option><option value="fix">FIX</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label>Docs URL</label><input id="ab-docs" placeholder="https://docs.broker.com"></div>
+    <div class="flex" style="justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+      <button class="btn btn-primary" onclick="addBrokerage(this)">Add Connector</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+async function addBrokerage(btn) {
+  btn.textContent = 'Adding...';
+  await api('POST', '/brokerages', {
+    connectorCode: document.getElementById('ab-code').value,
+    displayName: document.getElementById('ab-name').value,
+    baseUrl: document.getElementById('ab-url').value,
+    wsUrl: document.getElementById('ab-ws').value || undefined,
+    sandboxUrl: document.getElementById('ab-sandbox').value || undefined,
+    authType: document.getElementById('ab-auth').value,
+    docsUrl: document.getElementById('ab-docs').value || undefined,
+  });
+  btn.closest('.modal-overlay').remove();
+  render();
+}
+
+function showAddTokenModal() {
+  const chains = ['ethereum','solana','polygon_chain','bsc','avalanche','arbitrum','optimism','tron'];
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  overlay.innerHTML = `<div class="modal">
+    <h3>🪙 Add Supported Token</h3>
+    <div class="grid grid-2">
+      <div class="form-group"><label>Blockchain</label><select id="at-chain">${chains.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
+      <div class="form-group"><label>Symbol</label><input id="at-sym" placeholder="e.g., USDT"></div>
+      <div class="form-group"><label>Name</label><input id="at-name" placeholder="e.g., Tether USD"></div>
+      <div class="form-group"><label>Contract Address</label><input id="at-addr" placeholder="0x..."></div>
+      <div class="form-group"><label>Decimals</label><input id="at-dec" type="number" value="18"></div>
+      <div class="form-group"><label>Withdrawal Fee</label><input id="at-fee" type="number" step="0.0001" value="0.001"></div>
+    </div>
+    <div class="form-group"><label><input type="checkbox" id="at-stable"> Stablecoin</label></div>
+    <div class="flex" style="justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+      <button class="btn btn-primary" onclick="addToken(this)">Add Token</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+async function addToken(btn) {
+  btn.textContent = 'Adding...';
+  await api('POST', '/wallets/tokens', {
+    blockchain: document.getElementById('at-chain').value,
+    tokenSymbol: document.getElementById('at-sym').value,
+    tokenName: document.getElementById('at-name').value,
+    contractAddress: document.getElementById('at-addr').value,
+    decimals: parseInt(document.getElementById('at-dec').value),
+    withdrawalFee: parseFloat(document.getElementById('at-fee').value),
+    isStablecoin: document.getElementById('at-stable').checked,
+  });
+  btn.closest('.modal-overlay').remove();
+  render();
+}
+
+async function testBrokerage(id) {
+  const result = await api('POST', `/brokerages/${id}/test`);
+  alert(result.status === 'connected' ? `✅ Connected (${result.latencyMs}ms)` : `❌ ${result.status}: ${result.message||''}`);
+  render();
+}
+
+// ================================================================
+// CRYPTO WALLETS
+// ================================================================
+async function renderWallets(el) {
+  const [walletsRes, tokensRes, chainsRes] = await Promise.all([
+    api('GET', '/wallets'), api('GET', '/wallets/tokens'), api('GET', '/wallets/chains'),
+  ]);
+  const wallets = walletsRes.data || [];
+  const tokens = tokensRes.data || [];
+
+  el.innerHTML = `
+    <h1>Crypto Omnibus Wallets</h1>
+    <p class="subtitle">Manage platform-level wallets per blockchain, monitor balances, and configure client sub-accounts.</p>
+    <div class="flex-between mb">
+      <button class="btn btn-primary btn-sm" onclick="showCreateWalletModal()">+ Create Wallet</button>
+      <button class="btn btn-ghost btn-sm" onclick="triggerSweep()">🧹 Run Hot→Cold Sweep</button>
+    </div>
+
+    <div class="section-title">Platform Wallets</div>
+    <table>
+      <thead><tr><th>Name</th><th>Blockchain</th><th>Type</th><th>Address</th><th>Balance</th><th>Pending In/Out</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${wallets.map(w => `<tr>
+          <td><strong>${w.wallet_name}</strong></td>
+          <td><span class="badge blue">${w.blockchain}</span></td>
+          <td><span class="badge ${w.wallet_type==='hot'?'yellow':w.wallet_type==='cold'?'blue':'gray'}">${w.wallet_type}</span></td>
+          <td class="mono" style="max-width:120px;overflow:hidden;text-overflow:ellipsis">${w.address}</td>
+          <td class="mono">${parseFloat(w.balance).toFixed(8)}</td>
+          <td class="mono" style="font-size:11px;color:var(--text3)">+${parseFloat(w.pending_in||0).toFixed(4)} / -${parseFloat(w.pending_out||0).toFixed(4)}</td>
+          <td><span class="badge ${w.status==='active'?'green':'yellow'}">${w.status}</span></td>
+          <td><button class="btn btn-ghost btn-sm" onclick="showStoreKeyModal('${w.id}','${w.wallet_name}')">🔑 Key</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+
+    <div class="section-title mt">Supported Tokens (${tokens.length})</div>
+    <div class="flex-between mb">
+      <span style="color:var(--text3);font-size:12px">${tokens.filter(t=>t.is_stablecoin).length} stablecoins, ${tokens.filter(t=>!t.is_stablecoin).length} other</span>
+      <button class="btn btn-ghost btn-sm" onclick="showAddTokenModal()">+ Add Token</button>
+    </div>
+    <table>
+      <thead><tr><th>Symbol</th><th>Name</th><th>Blockchain</th><th>Contract</th><th>Decimals</th><th>Stablecoin</th><th>Withdrawal Fee</th></tr></thead>
+      <tbody>
+        ${tokens.map(t => `<tr>
+          <td><strong>${t.token_symbol}</strong></td>
+          <td>${t.token_name}</td>
+          <td><span class="badge blue">${t.blockchain}</span></td>
+          <td class="mono" style="max-width:120px;overflow:hidden;text-overflow:ellipsis">${t.contract_address}</td>
+          <td>${t.decimals}</td>
+          <td>${t.is_stablecoin?'✅':'—'}</td>
+          <td class="mono">${t.withdrawal_fee}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function showCreateWalletModal() {
+  const chains = ['bitcoin','ethereum','solana','polygon_chain','bsc','avalanche','arbitrum','optimism','tron','litecoin','ripple','cardano','polkadot'];
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  overlay.innerHTML = `<div class="modal">
+    <h3>🔐 Create Omnibus Wallet</h3>
+    <div class="form-group"><label>Wallet Name</label><input id="wl-name" placeholder="e.g., ETH Hot Wallet 1"></div>
+    <div class="form-group"><label>Blockchain</label><select id="wl-chain">${chains.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
+    <div class="form-group"><label>Wallet Type</label><select id="wl-type"><option value="hot">Hot</option><option value="warm">Warm</option><option value="cold">Cold</option></select></div>
+    <div class="form-group"><label>Address</label><input id="wl-addr" placeholder="Wallet address"></div>
+    <div class="form-group"><label>RPC Endpoint</label><input id="wl-rpc" placeholder="https://mainnet.infura.io/v3/..."></div>
+    <div class="form-group"><label>Max Balance (auto-sweep threshold)</label><input id="wl-max" type="number" placeholder="10"></div>
+    <div class="form-group"><label>Daily Withdrawal Limit</label><input id="wl-daily" type="number" placeholder="100"></div>
+    <div class="flex" style="justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+      <button class="btn btn-primary" onclick="createWallet(this)">Create Wallet</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+async function createWallet(btn) {
+  btn.textContent = 'Creating...';
+  await api('POST', '/wallets', {
+    walletName: document.getElementById('wl-name').value,
+    blockchain: document.getElementById('wl-chain').value,
+    walletType: document.getElementById('wl-type').value,
+    address: document.getElementById('wl-addr').value,
+    rpcEndpoint: document.getElementById('wl-rpc').value || undefined,
+    maxBalance: document.getElementById('wl-max').value || undefined,
+    dailyLimit: document.getElementById('wl-daily').value || undefined,
+  });
+  btn.closest('.modal-overlay').remove();
+  render();
+}
+
+function showStoreKeyModal(id, name) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  overlay.innerHTML = `<div class="modal">
+    <h3>🔑 ${name} — Store Private Key</h3>
+    <p style="font-size:12px;color:var(--red);margin-bottom:12px">⚠️ Private keys are encrypted with AES-256 before storage. In production, use HSM.</p>
+    <div class="form-group"><label>Private Key</label><textarea id="wk-key" rows="3" placeholder="Enter private key"></textarea></div>
+    <div class="form-group"><label>Mnemonic (optional)</label><textarea id="wk-mnemonic" rows="2" placeholder="word1 word2 word3..."></textarea></div>
+    <div class="flex" style="justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+      <button class="btn btn-primary" onclick="storeKey('${id}',this)">Encrypt & Store</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+async function storeKey(id, btn) {
+  btn.textContent = 'Encrypting...';
+  await api('POST', `/wallets/${id}/key`, {
+    privateKey: document.getElementById('wk-key').value,
+    mnemonic: document.getElementById('wk-mnemonic').value || undefined,
+  });
+  btn.closest('.modal-overlay').remove();
+  alert('✅ Key stored securely');
+}
+
+async function triggerSweep() {
+  if (!confirm('Run hot→cold sweep for all wallets above threshold?')) return;
+  await api('POST', '/wallets/0/sweep');
+  alert('Sweep check completed');
+  render();
+}
+
+// ================================================================
+// CUSTOM INSTRUMENTS
+// ================================================================
+async function renderInstruments(el) {
+  const { data: instruments } = await api('GET', '/instruments');
+  el.innerHTML = `
+    <h1>Custom Instruments & Private Assets</h1>
+    <p class="subtitle">Create custom tickers, trading pairs, and private assets with internal clearing.</p>
+    <div class="flex-between mb">
+      <button class="btn btn-primary btn-sm" onclick="showCreateInstrumentModal()">+ Create Instrument</button>
+    </div>
+    <table>
+      <thead><tr><th>Symbol</th><th>Name</th><th>Class</th><th>Exchange</th><th>Clearing</th><th>Settlement</th><th>Commission</th><th>Last Price</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${(instruments||[]).map(i => `<tr>
+          <td><strong class="mono">${i.symbol}</strong></td>
+          <td>${i.name}</td>
+          <td><span class="badge blue">${i.asset_class}</span></td>
+          <td class="mono">${i.exchange||'T1X'}</td>
+          <td><span class="badge ${i.clearing_method==='internal'?'green':'yellow'}">${i.clearing_method||'external'}</span></td>
+          <td>${i.settlement_type||'T+2'}</td>
+          <td class="mono">${((i.commission_rate||0)*100).toFixed(2)}%</td>
+          <td class="mono">${i.last_price ? '$'+parseFloat(i.last_price).toFixed(2) : '—'}</td>
+          <td class="flex">
+            <button class="btn btn-ghost btn-sm" onclick="showSetPriceModal('${i.id}','${i.symbol}')">Set Price</button>
+          </td>
+        </tr>`).join('')}
+        ${!(instruments||[]).length ? '<tr><td colspan="9" class="empty">No custom instruments. Click "+ Create Instrument" to start.</td></tr>' : ''}
+      </tbody>
+    </table>`;
+}
+
+function showCreateInstrumentModal() {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  overlay.innerHTML = `<div class="modal">
+    <h3>📊 Create Custom Instrument</h3>
+    <div class="grid grid-2">
+      <div class="form-group"><label>Symbol</label><input id="ci-sym" placeholder="e.g., PRIV-A, BTC/T1USD"></div>
+      <div class="form-group"><label>Name</label><input id="ci-name" placeholder="e.g., Private Fund A"></div>
+      <div class="form-group"><label>Asset Class</label>
+        <select id="ci-class"><option value="equity">Equity</option><option value="crypto">Crypto</option><option value="forex">Forex</option><option value="private_equity">Private Equity</option><option value="private_debt">Private Debt</option><option value="etf">ETF</option><option value="bond">Bond</option></select>
+      </div>
+      <div class="form-group"><label>Exchange</label><input id="ci-ex" value="T1X" placeholder="T1X"></div>
+      <div class="form-group"><label>Currency</label><input id="ci-cur" value="USD"></div>
+      <div class="form-group"><label>Clearing Method</label>
+        <select id="ci-clear"><option value="internal">Internal (Self-Clear)</option><option value="self_clearing">Self-Clearing</option><option value="external">External</option></select>
+      </div>
+      <div class="form-group"><label>Settlement</label>
+        <select id="ci-settle"><option value="instant">Instant (T+0)</option><option value="T+1">T+1</option><option value="T+2">T+2</option></select>
+      </div>
+      <div class="form-group"><label>Commission Rate</label><input id="ci-comm" type="number" step="0.0001" value="0.001" placeholder="0.001 = 0.1%"></div>
+      <div class="form-group"><label>Min Quantity</label><input id="ci-min" type="number" value="1"></div>
+      <div class="form-group"><label>Tick Size</label><input id="ci-tick" type="number" step="0.0001" value="0.01"></div>
+      <div class="form-group"><label>Initial Price</label><input id="ci-price" type="number" step="0.01" placeholder="100.00"></div>
+      <div class="form-group"><label>Margin Requirement</label><input id="ci-margin" type="number" step="0.01" value="0.25" placeholder="0.25 = 25%"></div>
+    </div>
+    <div class="form-group"><label>Visibility</label>
+      <select id="ci-vis"><option value="all">All Clients</option><option value="private">Specific Clients Only</option></select>
+    </div>
+    <div class="flex" style="justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+      <button class="btn btn-primary" onclick="createInstrument(this)">Create Instrument</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+async function createInstrument(btn) {
+  btn.textContent = 'Creating...';
+  await api('POST', '/instruments', {
+    symbol: document.getElementById('ci-sym').value,
+    name: document.getElementById('ci-name').value,
+    assetClass: document.getElementById('ci-class').value,
+    exchange: document.getElementById('ci-ex').value,
+    currency: document.getElementById('ci-cur').value,
+    clearingMethod: document.getElementById('ci-clear').value,
+    settlementType: document.getElementById('ci-settle').value,
+    commissionRate: parseFloat(document.getElementById('ci-comm').value),
+    minQuantity: parseFloat(document.getElementById('ci-min').value),
+    tickSize: parseFloat(document.getElementById('ci-tick').value),
+    lastPrice: document.getElementById('ci-price').value ? parseFloat(document.getElementById('ci-price').value) : undefined,
+    marginRequirement: parseFloat(document.getElementById('ci-margin').value),
+    visibleTo: document.getElementById('ci-vis').value === 'all' ? ['all'] : [],
+  });
+  btn.closest('.modal-overlay').remove();
+  render();
+}
+
+function showSetPriceModal(id, symbol) {
+  const price = prompt(`Set reference price for ${symbol}:`, '');
+  if (price) api('POST', `/instruments/${id}/price`, { price: parseFloat(price) }).then(render);
+}
+
+// ================================================================
+// CLEARING & SETTLEMENT
+// ================================================================
+async function renderClearing(el) {
+  const { data: settlements } = await api('GET', '/clearing/settlements').catch(() => ({ data: [] }));
+  el.innerHTML = `
+    <h1>Clearing & Settlement</h1>
+    <p class="subtitle">Monitor the internal matching engine, run settlement batches, and view trade history.</p>
+    <div class="flex-between mb">
+      <button class="btn btn-primary btn-sm" onclick="runSettlement()">⚖️ Run Settlement</button>
+    </div>
+
+    <div class="section-title">Recent Settlement Runs</div>
+    <table>
+      <thead><tr><th>Date</th><th>Trades</th><th>Volume</th><th>Fees</th><th>Status</th><th>Completed</th></tr></thead>
+      <tbody>
+        ${(settlements||[]).map(s => `<tr>
+          <td class="mono">${s.settlement_date}</td>
+          <td>${s.trades_count}</td>
+          <td class="mono">$${parseFloat(s.total_volume||0).toLocaleString()}</td>
+          <td class="mono">$${parseFloat(s.total_fees||0).toFixed(2)}</td>
+          <td><span class="badge ${s.status==='completed'?'green':s.status==='failed'?'red':'yellow'}">${s.status}</span></td>
+          <td style="color:var(--text3);font-size:12px">${s.completed_at ? new Date(s.completed_at).toLocaleString() : '—'}</td>
+        </tr>`).join('')}
+        ${!(settlements||[]).length ? '<tr><td colspan="6" class="empty">No settlement runs yet.</td></tr>' : ''}
+      </tbody>
+    </table>
+
+    <div class="section-title mt">How Internal Clearing Works</div>
+    <div class="card" style="font-size:13px;color:var(--text2);line-height:1.7">
+      <p>1. Admin creates custom instruments with <strong>clearing_method = 'internal'</strong></p>
+      <p>2. Client orders for these instruments are routed to the <strong>Internal Matching Engine</strong> instead of external brokers</p>
+      <p>3. The engine uses <strong>price-time priority</strong> to match buy/sell orders</p>
+      <p>4. Matched trades create records with commissions and settlement dates</p>
+      <p>5. Run <strong>Settlement</strong> to finalize trades: debit buyers, credit sellers, collect fees</p>
+      <p>6. Positions are updated in real-time; cash settles on the settlement date</p>
+    </div>`;
+}
+
+async function runSettlement() {
+  const date = prompt('Settlement date (YYYY-MM-DD):', new Date().toISOString().slice(0, 10));
+  if (!date) return;
+  const result = await api('POST', '/clearing/settlement', { date });
+  alert(result.trades !== undefined
+    ? `✅ Settlement complete: ${result.trades} trades, $${result.volume?.toLocaleString()} volume, $${result.fees?.toFixed(2)} fees`
+    : result.message || result.error || 'Settlement failed');
+  render();
+}
+
+// Boot
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050810">
+<title>T1 Broker — API Documentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050810;--bg2:#0a0f1e;--bg3:#111a2e;--surface:#0d1422;--card:#0f1726;--border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.12);--text:#e8ecf4;--text2:#8892a8;--text3:#4a5568;--accent:#3b82f6;--accent2:#6366f1;--green:#10b981;--red:#ef4444;--orange:#f97316;--purple:#8b5cf6;--cyan:#06b6d4;--yellow:#eab308;--glow:rgba(59,130,246,.15)}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.65}
+.mono{font-family:'JetBrains Mono',monospace}::selection{background:rgba(59,130,246,.3)}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(24px);background:rgba(5,8,16,.85);border-bottom:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:white}
+.logo-text{font-weight:700;font-size:18px}.logo-text span{color:var(--accent)}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{color:var(--text2);font-size:13px;font-weight:500}.nav-links a:hover{color:var(--text);text-decoration:none}
+.nav-cta{padding:8px 20px;background:var(--accent);color:white!important;border-radius:7px;font-weight:600;font-size:13px}
+
+/* LAYOUT */
+.page{display:flex;margin-top:66px;min-height:calc(100vh - 66px)}
+.sidebar{width:260px;position:fixed;top:66px;left:0;bottom:0;overflow-y:auto;padding:24px 0;border-right:1px solid var(--border);background:var(--bg)}
+.sb-section{padding:0 20px;margin-bottom:24px}
+.sb-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:10px}
+.sb-link{display:block;padding:7px 12px;font-size:13px;color:var(--text2);border-radius:6px;margin-bottom:2px;transition:all .15s;text-decoration:none}
+.sb-link:hover{background:rgba(255,255,255,.04);color:var(--text);text-decoration:none}
+.sb-link.active{background:rgba(59,130,246,.1);color:var(--accent);font-weight:600}
+.content{margin-left:260px;flex:1;padding:40px 60px;max-width:920px}
+
+/* TYPOGRAPHY */
+h1{font-size:36px;font-weight:800;letter-spacing:-1.5px;margin-bottom:12px}
+h2{font-size:24px;font-weight:700;letter-spacing:-.5px;margin:48px 0 16px;padding-top:24px;border-top:1px solid var(--border)}
+h3{font-size:18px;font-weight:600;margin:28px 0 12px;color:var(--text)}
+.subtitle{font-size:16px;color:var(--text2);margin-bottom:32px}
+
+/* CODE BLOCKS */
+.code-block{background:var(--bg2);border:1px solid var(--border);border-radius:12px;margin:16px 0 20px;overflow:hidden;position:relative}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);font-size:12px;font-weight:600}
+.code-lang{color:var(--text3)}
+.copy-btn{padding:4px 12px;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:5px;color:var(--text2);font-size:11px;cursor:pointer;font-family:'JetBrains Mono',monospace}.copy-btn:hover{background:rgba(255,255,255,.1);color:var(--text)}
+pre{padding:16px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;color:#c9d1d9}
+pre .cm{color:#8b949e}
+pre .kw{color:#ff7b72}
+pre .str{color:#a5d6ff}
+pre .num{color:#79c0ff}
+pre .fn{color:#d2a8ff}
+pre .key{color:#7ee787}
+pre .method{color:#ffa657;font-weight:600}
+pre .url{color:#a5d6ff}
+
+/* ENDPOINT CARD */
+.endpoint{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin:20px 0}
+.ep-method{display:inline-flex;align-items:center;gap:10px;margin-bottom:12px}
+.method-badge{padding:4px 10px;border-radius:5px;font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:.5px}
+.method-badge.get{background:rgba(16,185,129,.15);color:var(--green)}
+.method-badge.post{background:rgba(59,130,246,.15);color:var(--accent)}
+.method-badge.patch{background:rgba(249,115,22,.15);color:var(--orange)}
+.method-badge.delete{background:rgba(239,68,68,.15);color:var(--red)}
+.ep-path{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text)}
+.ep-desc{font-size:14px;color:var(--text2);margin-bottom:16px}
+
+/* TABLES */
+table{width:100%;border-collapse:collapse;margin:12px 0 20px;font-size:13px}
+th{text-align:left;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--text2)}
+td{padding:10px 14px;border:1px solid var(--border)}
+td code{background:var(--bg2);padding:2px 6px;border-radius:4px;font-size:12px;font-family:'JetBrains Mono',monospace}
+
+/* BADGES */
+.badge{display:inline-block;padding:3px 10px;border-radius:5px;font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.badge-required{background:rgba(239,68,68,.12);color:var(--red)}
+.badge-optional{background:rgba(139,92,246,.12);color:var(--purple)}
+.badge-auth{background:rgba(234,179,8,.12);color:var(--yellow)}
+
+/* CALLOUT */
+.callout{padding:16px 20px;border-radius:10px;margin:16px 0;font-size:14px;line-height:1.6}
+.callout-info{background:rgba(59,130,246,.06);border-left:3px solid var(--accent);color:var(--text2)}
+.callout-warn{background:rgba(249,115,22,.06);border-left:3px solid var(--orange);color:var(--text2)}
+.callout-danger{background:rgba(239,68,68,.06);border-left:3px solid var(--red);color:var(--text2)}
+.callout-success{background:rgba(16,185,129,.06);border-left:3px solid var(--green);color:var(--text2)}
+.callout strong{color:var(--text)}
+
+/* MISC */
+.tag-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.perm-tag{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.sep{height:1px;background:var(--border);margin:48px 0}
+
+@media(max-width:900px){.sidebar{display:none}.content{margin-left:0;padding:30px 20px}nav{padding:14px 20px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/landing.html" class="logo"><div class="logo-mark">T1</div><div class="logo-text">T1 <span>Broker</span></div></a>
+  <div class="nav-links">
+    <a href="#authentication">Auth</a>
+    <a href="#api-keys">Keys</a>
+    <a href="#trading">Trading</a>
+    <a href="#market-data">Market Data</a>
+    <a href="#account">Account</a>
+    <a href="/index.html" class="nav-cta">Trading Platform</a>
+  </div>
+</nav>
+
+<div class="page">
+<aside class="sidebar">
+  <div class="sb-section">
+    <div class="sb-label">Getting Started</div>
+    <a href="#overview" class="sb-link active">Overview</a>
+    <a href="#base-url" class="sb-link">Base URL</a>
+    <a href="#authentication" class="sb-link">Authentication</a>
+    <a href="#rate-limits" class="sb-link">Rate Limits</a>
+    <a href="#errors" class="sb-link">Error Codes</a>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">API Keys</div>
+    <a href="#api-keys" class="sb-link">Create Key</a>
+    <a href="#list-keys" class="sb-link">List Keys</a>
+    <a href="#revoke-key" class="sb-link">Revoke Key</a>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Trading</div>
+    <a href="#place-order" class="sb-link">Place Order</a>
+    <a href="#list-orders" class="sb-link">List Orders</a>
+    <a href="#cancel-order" class="sb-link">Cancel Order</a>
+    <a href="#batch-orders" class="sb-link">Batch Orders</a>
+    <a href="#get-positions" class="sb-link">Positions</a>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Market Data</div>
+    <a href="#search-instruments" class="sb-link">Search Instruments</a>
+    <a href="#get-quotes" class="sb-link">Get Quotes</a>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Account</div>
+    <a href="#account" class="sb-link">Get Profile</a>
+    <a href="#accounts" class="sb-link">Account Balances</a>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Excel Trading</div>
+    <a href="#excel-trading" class="sb-link">Excel Template</a>
+    <a href="#excel-commands" class="sb-link">Bridge Commands</a>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Code Examples</div>
+    <a href="#example-python" class="sb-link">Python</a>
+    <a href="#example-node" class="sb-link">Node.js</a>
+    <a href="#example-powershell" class="sb-link">PowerShell</a>
+    <a href="#example-curl" class="sb-link">cURL</a>
+  </div>
+</aside>
+
+<main class="content">
+
+<!-- OVERVIEW -->
+<section id="overview">
+<h1>T1 Broker API</h1>
+<p class="subtitle">Programmatic access to trade equities, crypto, and private markets. Authenticate with API keys — no browser required.</p>
+
+<div class="callout callout-info"><strong>API Key Trading</strong> — Clients can generate API keys to trade programmatically via any language or tool (Python, Node.js, cURL, PowerShell, etc.) without using the web trading interface. The same order engine, clearing, and risk management apply to both UI and API orders.</div>
+
+<h3>Quick Start</h3>
+<ol style="color:var(--text2);padding-left:20px;margin:12px 0;font-size:14px;line-height:2.2">
+  <li>Register at <a href="/signup.html">/signup.html</a> and complete KYC verification</li>
+  <li>Log in at <a href="/index.html">/index.html</a> and go to Security Settings</li>
+  <li>Create an API key (or via <code style="background:var(--bg2);padding:2px 6px;border-radius:4px;font-size:12px">POST /api/v1/api-keys</code>)</li>
+  <li>Use the key in the <code style="background:var(--bg2);padding:2px 6px;border-radius:4px;font-size:12px">X-API-Key</code> header for all requests</li>
+  <li>Start placing orders programmatically</li>
+</ol>
+</section>
+
+<!-- BASE URL -->
+<section id="base-url">
+<h2>Base URL</h2>
+<div class="code-block"><div class="code-header"><span class="code-lang">URL</span></div>
+<pre><span class="url">https://t1broker.com/api/v1</span>
+
+<span class="cm"># Local development</span>
+<span class="url">http://localhost:3000/api/v1</span></pre></div>
+<p style="font-size:14px;color:var(--text2)">All endpoints are prefixed with <code style="background:var(--bg2);padding:2px 6px;border-radius:4px;font-size:12px">/api/v1</code>. All request/response bodies use JSON.</p>
+</section>
+
+<!-- AUTHENTICATION -->
+<section id="authentication">
+<h2>Authentication</h2>
+<p style="color:var(--text2);font-size:14px;margin-bottom:16px">Two authentication methods are supported. API keys are recommended for programmatic access.</p>
+
+<h3>Method 1: API Key (Recommended)</h3>
+<p style="color:var(--text2);font-size:14px">Pass your API key in the <code>X-API-Key</code> header with every request:</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">HTTP</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><span class="method">GET</span> <span class="url">/api/v1/positions</span> HTTP/1.1
+Host: t1broker.com
+<span class="key">X-API-Key</span>: <span class="str">t1_live_a1b2c3d4e5f6...your_full_key</span></pre></div>
+
+<h3>Method 2: JWT Bearer Token</h3>
+<p style="color:var(--text2);font-size:14px">Obtain a JWT via the login flow, then pass it as a Bearer token:</p>
+<div class="code-block"><div class="code-header"><span class="code-lang">HTTP</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><span class="key">Authorization</span>: Bearer <span class="str">eyJhbGciOiJIUzI1NiIs...</span></pre></div>
+
+<div class="callout callout-warn"><strong>API Key Security</strong> — Your API key is shown only once at creation. Store it securely (environment variable, secrets manager). Never commit keys to source code or share them. Use IP whitelisting for production.</div>
+
+<h3>API Key Permissions</h3>
+<div class="tag-row">
+  <span class="perm-tag" style="background:rgba(16,185,129,.12);color:var(--green)">read</span>
+  <span class="perm-tag" style="background:rgba(59,130,246,.12);color:var(--accent)">trade</span>
+  <span class="perm-tag" style="background:rgba(249,115,22,.12);color:var(--orange)">transfer</span>
+  <span class="perm-tag" style="background:rgba(239,68,68,.12);color:var(--red)">withdraw</span>
+</div>
+<table>
+  <tr><th>Permission</th><th>Access</th></tr>
+  <tr><td><code>read</code></td><td>View positions, orders, balances, market data, account info</td></tr>
+  <tr><td><code>trade</code></td><td>Place and cancel orders</td></tr>
+  <tr><td><code>transfer</code></td><td>Transfer between accounts</td></tr>
+  <tr><td><code>withdraw</code></td><td>Crypto withdrawals and fiat wire requests</td></tr>
+</table>
+</section>
+
+<!-- RATE LIMITS -->
+<section id="rate-limits">
+<h2>Rate Limits</h2>
+<table>
+  <tr><th>Category</th><th>Limit</th><th>Window</th></tr>
+  <tr><td>Authentication</td><td>5 requests</td><td>per second</td></tr>
+  <tr><td>Order Placement</td><td>10 requests</td><td>per second</td></tr>
+  <tr><td>General API</td><td>30 requests</td><td>per second</td></tr>
+  <tr><td>Market Data</td><td>30 requests</td><td>per second</td></tr>
+  <tr><td>Transfers</td><td>5 requests</td><td>per minute</td></tr>
+</table>
+<p style="font-size:13px;color:var(--text3)">Rate limit headers: <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code>, <code>X-RateLimit-Reset</code></p>
+</section>
+
+<!-- ERRORS -->
+<section id="errors">
+<h2>Error Codes</h2>
+<table>
+  <tr><th>HTTP</th><th>Code</th><th>Meaning</th></tr>
+  <tr><td>400</td><td><code>VALIDATION_ERROR</code></td><td>Invalid request body or parameters</td></tr>
+  <tr><td>401</td><td><code>AUTH_REQUIRED</code></td><td>Missing or invalid authentication</td></tr>
+  <tr><td>401</td><td><code>INVALID_API_KEY</code></td><td>API key is invalid, expired, or revoked</td></tr>
+  <tr><td>403</td><td><code>KYC_NOT_STARTED</code></td><td>KYC verification not started — complete KYC first</td></tr>
+  <tr><td>403</td><td><code>KYC_PENDING_REVIEW</code></td><td>KYC submitted, awaiting admin approval</td></tr>
+  <tr><td>403</td><td><code>INSUFFICIENT_API_PERMISSIONS</code></td><td>API key lacks the required permission</td></tr>
+  <tr><td>403</td><td><code>FORBIDDEN</code></td><td>Role-based access denied</td></tr>
+  <tr><td>404</td><td><code>NOT_FOUND</code></td><td>Resource does not exist</td></tr>
+  <tr><td>429</td><td><code>RATE_LIMITED</code></td><td>Too many requests — slow down</td></tr>
+  <tr><td>500</td><td><code>INTERNAL_ERROR</code></td><td>Server error — contact support</td></tr>
+</table>
+<div class="code-block"><div class="code-header"><span class="code-lang">Error Response</span></div>
+<pre>{
+  <span class="key">"error"</span>: <span class="str">"API key lacks 'trade' permission"</span>,
+  <span class="key">"code"</span>: <span class="str">"INSUFFICIENT_API_PERMISSIONS"</span>,
+  <span class="key">"requiredPermission"</span>: <span class="str">"trade"</span>
+}</pre></div>
+</section>
+
+<div class="sep"></div>
+
+<!-- API KEYS -->
+<section id="api-keys">
+<h2>Create API Key</h2>
+<div class="endpoint">
+  <div class="ep-method"><span class="method-badge post">POST</span><span class="ep-path">/api/v1/api-keys</span></div>
+  <p class="ep-desc">Generate a new API key. Requires JWT authentication (not API key) and approved KYC. The raw key is returned only once.</p>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+    <tr><td><code>label</code></td><td>string</td><td><span class="badge badge-optional">optional</span></td><td>Friendly name (e.g. "Trading Bot")</td></tr>
+    <tr><td><code>permissions</code></td><td>array</td><td><span class="badge badge-optional">optional</span></td><td>["read","trade","transfer","withdraw"]. Default: ["read","trade"]</td></tr>
+    <tr><td><code>ipWhitelist</code></td><td>array</td><td><span class="badge badge-optional">optional</span></td><td>Restrict key to specific IPs. Empty = all IPs allowed</td></tr>
+    <tr><td><code>expiresInDays</code></td><td>number</td><td><span class="badge badge-optional">optional</span></td><td>Key expiry in days. Default: 365</td></tr>
+  </table>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Request</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><span class="method">POST</span> <span class="url">/api/v1/api-keys</span>
+<span class="key">Authorization</span>: Bearer &lt;jwt_token&gt;
+<span class="key">Content-Type</span>: application/json
+
+{
+  <span class="key">"label"</span>: <span class="str">"My Trading Bot"</span>,
+  <span class="key">"permissions"</span>: [<span class="str">"read"</span>, <span class="str">"trade"</span>],
+  <span class="key">"ipWhitelist"</span>: [<span class="str">"203.0.113.50"</span>],
+  <span class="key">"expiresInDays"</span>: <span class="num">180</span>
+}</pre></div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Response 201</span></div>
+<pre>{
+  <span class="key">"message"</span>: <span class="str">"API key created. Save this key — it will not be shown again."</span>,
+  <span class="key">"apiKey"</span>: <span class="str">"t1_live_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6"</span>,
+  <span class="key">"keyId"</span>: <span class="num">1</span>,
+  <span class="key">"keyPreview"</span>: <span class="str">"t1_live_a1b2c3d4...w3x4y5z6"</span>,
+  <span class="key">"label"</span>: <span class="str">"My Trading Bot"</span>,
+  <span class="key">"permissions"</span>: [<span class="str">"read"</span>, <span class="str">"trade"</span>],
+  <span class="key">"expiresAt"</span>: <span class="str">"2026-08-17T12:00:00.000Z"</span>
+}</pre></div>
+<div class="callout callout-danger"><strong>Save your API key immediately!</strong> The full key (<code>apiKey</code>) is shown only once. If lost, revoke the old key and create a new one.</div>
+</section>
+
+<section id="list-keys">
+<h2>List API Keys</h2>
+<div class="endpoint">
+  <div class="ep-method"><span class="method-badge get">GET</span><span class="ep-path">/api/v1/api-keys</span></div>
+  <p class="ep-desc">List all API keys for your account. Only previews are shown — full keys are never retrievable after creation.</p>
+</div>
+</section>
+
+<section id="revoke-key">
+<h2>Revoke API Key</h2>
+<div class="endpoint">
+  <div class="ep-method"><span class="method-badge delete">DELETE</span><span class="ep-path">/api/v1/api-keys/:id</span></div>
+  <p class="ep-desc">Permanently revoke an API key. All requests using this key will immediately fail.</p>
+</div>
+</section>
+
+<div class="sep"></div>
+
+<!-- TRADING -->
+<section id="place-order">
+<h2>Place Order</h2>
+<div class="endpoint">
+  <div class="ep-method"><span class="method-badge post">POST</span><span class="ep-path">/api/v1/orders</span></div>
+  <p class="ep-desc">Submit a new order. Requires <code>trade</code> permission and approved KYC.</p>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+    <tr><td><code>instrumentId</code></td><td>number</td><td><span class="badge badge-required">required</span></td><td>Instrument ID (from /market/instruments)</td></tr>
+    <tr><td><code>side</code></td><td>string</td><td><span class="badge badge-required">required</span></td><td><code>buy</code> or <code>sell</code></td></tr>
+    <tr><td><code>orderType</code></td><td>string</td><td><span class="badge badge-required">required</span></td><td><code>market</code>, <code>limit</code>, <code>stop</code>, <code>stop_limit</code></td></tr>
+    <tr><td><code>quantity</code></td><td>number</td><td><span class="badge badge-required">required</span></td><td>Number of shares/units</td></tr>
+    <tr><td><code>price</code></td><td>number</td><td><span class="badge badge-optional">optional</span></td><td>Limit price (required for limit/stop_limit)</td></tr>
+    <tr><td><code>stopPrice</code></td><td>number</td><td><span class="badge badge-optional">optional</span></td><td>Stop trigger price (required for stop/stop_limit)</td></tr>
+    <tr><td><code>timeInForce</code></td><td>string</td><td><span class="badge badge-optional">optional</span></td><td><code>day</code> (default), <code>gtc</code>, <code>ioc</code>, <code>fok</code></td></tr>
+    <tr><td><code>accountId</code></td><td>number</td><td><span class="badge badge-optional">optional</span></td><td>Trading account (default: primary account)</td></tr>
+  </table>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Request</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><span class="method">POST</span> <span class="url">/api/v1/orders</span>
+<span class="key">X-API-Key</span>: <span class="str">t1_live_your_api_key_here</span>
+<span class="key">Content-Type</span>: application/json
+
+{
+  <span class="key">"instrumentId"</span>: <span class="num">1</span>,
+  <span class="key">"side"</span>: <span class="str">"buy"</span>,
+  <span class="key">"orderType"</span>: <span class="str">"limit"</span>,
+  <span class="key">"quantity"</span>: <span class="num">100</span>,
+  <span class="key">"price"</span>: <span class="num">185.50</span>,
+  <span class="key">"timeInForce"</span>: <span class="str">"gtc"</span>
+}</pre></div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Response 201</span></div>
+<pre>{
+  <span class="key">"data"</span>: {
+    <span class="key">"id"</span>: <span class="num">12847</span>,
+    <span class="key">"instrumentId"</span>: <span class="num">1</span>,
+    <span class="key">"symbol"</span>: <span class="str">"AAPL"</span>,
+    <span class="key">"side"</span>: <span class="str">"buy"</span>,
+    <span class="key">"orderType"</span>: <span class="str">"limit"</span>,
+    <span class="key">"quantity"</span>: <span class="num">100</span>,
+    <span class="key">"price"</span>: <span class="num">185.50</span>,
+    <span class="key">"status"</span>: <span class="str">"pending"</span>,
+    <span class="key">"timeInForce"</span>: <span class="str">"gtc"</span>,
+    <span class="key">"createdAt"</span>: <span class="str">"2026-02-18T14:30:00.000Z"</span>
+  }
+}</pre></div>
+</section>
+
+<section id="list-orders">
+<h2>List Orders</h2>
+<div class="endpoint">
+  <div class="ep-method"><span class="method-badge get">GET</span><span class="ep-path">/api/v1/orders</span></div>
+  <p class="ep-desc">Retrieve all orders for the authenticated user. Supports filtering by status.</p>
+  <table>
+    <tr><th>Query Param</th><th>Type</th><th>Description</th></tr>
+    <tr><td><code>status</code></td><td>string</td><td>Filter: <code>pending</code>, <code>filled</code>, <code>cancelled</code>, <code>rejected</code></td></tr>
+    <tr><td><code>limit</code></td><td>number</td><td>Max results (default 50, max 200)</td></tr>
+    <tr><td><code>offset</code></td><td>number</td><td>Pagination offset</td></tr>
+  </table>
+</div>
+</section>
+
+<section id="cancel-order">
+<h2>Cancel Order</h2>
+<div class="endpoint">
+  <div class="ep-method"><span class="method-badge delete">DELETE</span><span class="ep-path">/api/v1/orders/:id</span></div>
+  <p class="ep-desc">Cancel a pending order by ID. Requires <code>trade</code> permission.</p>
+</div>
+</section>
+
+<section id="batch-orders">
+<h2>Batch Orders (Multi-Ticker)</h2>
+<div class="endpoint">
+  <div class="ep-method"><span class="method-badge post">POST</span><span class="ep-path">/api/v1/orders/batch</span></div>
+  <p class="ep-desc">Place up to 20 orders simultaneously across different tickers. Each order is processed independently — if one fails, the others still execute. Requires <code>trade</code> permission.</p>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+    <tr><td><code>orders</code></td><td>array</td><td><span class="badge badge-required">required</span></td><td>Array of order objects (max 20). Each follows the same schema as Place Order.</td></tr>
+  </table>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Request — 3 simultaneous orders</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><span class="method">POST</span> <span class="url">/api/v1/orders/batch</span>
+<span class="key">X-API-Key</span>: <span class="str">t1_live_your_api_key</span>
+<span class="key">Content-Type</span>: application/json
+
+{
+  <span class="key">"orders"</span>: [
+    {<span class="key">"instrumentId"</span>: <span class="num">1</span>, <span class="key">"side"</span>: <span class="str">"buy"</span>, <span class="key">"orderType"</span>: <span class="str">"market"</span>, <span class="key">"quantity"</span>: <span class="num">100</span>},
+    {<span class="key">"instrumentId"</span>: <span class="num">9</span>, <span class="key">"side"</span>: <span class="str">"buy"</span>, <span class="key">"orderType"</span>: <span class="str">"limit"</span>, <span class="key">"quantity"</span>: <span class="num">0.5</span>, <span class="key">"price"</span>: <span class="num">95000</span>},
+    {<span class="key">"instrumentId"</span>: <span class="num">3</span>, <span class="key">"side"</span>: <span class="str">"sell"</span>, <span class="key">"orderType"</span>: <span class="str">"market"</span>, <span class="key">"quantity"</span>: <span class="num">50</span>}
+  ]
+}</pre></div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Response 201</span></div>
+<pre>{
+  <span class="key">"placed"</span>: <span class="num">2</span>,
+  <span class="key">"failed"</span>: <span class="num">1</span>,
+  <span class="key">"total"</span>: <span class="num">3</span>,
+  <span class="key">"results"</span>: [
+    {<span class="key">"success"</span>: <span class="kw">true</span>, <span class="key">"data"</span>: {<span class="key">"id"</span>: <span class="num">101</span>, <span class="key">"status"</span>: <span class="str">"pending"</span>}},
+    {<span class="key">"success"</span>: <span class="kw">true</span>, <span class="key">"data"</span>: {<span class="key">"id"</span>: <span class="num">102</span>, <span class="key">"status"</span>: <span class="str">"pending"</span>}},
+    {<span class="key">"success"</span>: <span class="kw">false</span>, <span class="key">"error"</span>: <span class="str">"Insufficient margin"</span>, <span class="key">"instrument"</span>: <span class="num">3</span>}
+  ]
+}</pre></div>
+</section>
+
+<section id="get-positions">
+<h2>Get Positions</h2>
+<div class="endpoint">
+  <div class="ep-method"><span class="method-badge get">GET</span><span class="ep-path">/api/v1/positions</span></div>
+  <p class="ep-desc">Retrieve all open positions with real-time P&amp;L. Requires <code>read</code> permission.</p>
+</div>
+<div class="code-block"><div class="code-header"><span class="code-lang">Response</span></div>
+<pre>{
+  <span class="key">"data"</span>: [{
+    <span class="key">"id"</span>: <span class="num">42</span>,
+    <span class="key">"symbol"</span>: <span class="str">"AAPL"</span>,
+    <span class="key">"side"</span>: <span class="str">"long"</span>,
+    <span class="key">"quantity"</span>: <span class="num">100</span>,
+    <span class="key">"avgCost"</span>: <span class="num">185.50</span>,
+    <span class="key">"lastPrice"</span>: <span class="num">192.34</span>,
+    <span class="key">"marketValue"</span>: <span class="num">19234.00</span>,
+    <span class="key">"unrealizedPnl"</span>: <span class="num">684.00</span>,
+    <span class="key">"pnlPercent"</span>: <span class="num">3.69</span>
+  }]
+}</pre></div>
+</section>
+
+<div class="sep"></div>
+
+<!-- MARKET DATA -->
+<section id="search-instruments">
+<h2>Search Instruments</h2>
+<div class="endpoint">
+  <div class="ep-method"><span class="method-badge get">GET</span><span class="ep-path">/api/v1/market/instruments</span></div>
+  <p class="ep-desc">Search tradable instruments by symbol, name, asset class, or exchange.</p>
+  <table>
+    <tr><th>Query Param</th><th>Type</th><th>Description</th></tr>
+    <tr><td><code>search</code></td><td>string</td><td>Symbol or name search (e.g. "AAPL", "Bitcoin")</td></tr>
+    <tr><td><code>assetClass</code></td><td>string</td><td><code>equity</code>, <code>crypto</code>, <code>etf</code>, <code>forex</code>, <code>option</code></td></tr>
+    <tr><td><code>exchange</code></td><td>string</td><td>Exchange filter (e.g. "NASDAQ", "CRYPTO")</td></tr>
+    <tr><td><code>limit</code></td><td>number</td><td>Max results (default 50)</td></tr>
+  </table>
+</div>
+</section>
+
+<section id="get-quotes">
+<h2>Get Quotes</h2>
+<div class="endpoint">
+  <div class="ep-method"><span class="method-badge get">GET</span><span class="ep-path">/api/v1/market/quotes/:symbol</span></div>
+  <p class="ep-desc">Get real-time quote for a specific instrument.</p>
+</div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ACCOUNT -->
+<section id="account">
+<h2>Get Profile</h2>
+<div class="endpoint">
+  <div class="ep-method"><span class="method-badge get">GET</span><span class="ep-path">/api/v1/clients/me</span></div>
+  <p class="ep-desc">Retrieve the authenticated user's profile including KYC status and account details.</p>
+</div>
+</section>
+
+<section id="accounts">
+<h2>Account Balances</h2>
+<div class="endpoint">
+  <div class="ep-method"><span class="method-badge get">GET</span><span class="ep-path">/api/v1/clients/me/accounts</span></div>
+  <p class="ep-desc">List all trading accounts with balances, buying power, and margin details.</p>
+</div>
+</section>
+
+<div class="sep"></div>
+
+<!-- EXCEL TRADING -->
+<section id="excel-trading">
+<h2>Excel Trading Template</h2>
+<p style="color:var(--text2);font-size:14px;margin-bottom:16px">Trade directly from Excel using the T1 Broker Trading Template + Python bridge. Supports multi-ticker simultaneous orders, live position tracking, and instrument search.</p>
+
+<div class="callout callout-success"><strong>3 files needed:</strong> (1) <code>T1-Broker-Trading-Template.xlsx</code> — Excel workbook with 7 sheets, (2) <code>t1_excel_bridge.py</code> — bridge script, (3) <code>t1_client.py</code> — Python SDK. Place all 3 in the same folder.</div>
+
+<h3>Excel Sheets</h3>
+<table>
+  <tr><th>Sheet</th><th>Purpose</th></tr>
+  <tr><td><code>Connection</code></td><td>API key, base URL, connection status + KYC/trading info</td></tr>
+  <tr><td><code>Order Entry</code></td><td>Multi-ticker batch orders (20 rows, dropdowns for side/type/TIF, Execute YES/NO)</td></tr>
+  <tr><td><code>Quick Trade</code></td><td>Single order shortcut with result display</td></tr>
+  <tr><td><code>Positions</code></td><td>Live portfolio: symbols, quantity, avg cost, last price, market value, P/L</td></tr>
+  <tr><td><code>Order History</code></td><td>All submitted orders with status (50 rows)</td></tr>
+  <tr><td><code>Instruments</code></td><td>Available tickers with search filter and asset class filter (100 rows)</td></tr>
+  <tr><td><code>Help</code></td><td>Setup guide, command reference, troubleshooting</td></tr>
+</table>
+</section>
+
+<section id="excel-commands">
+<h2>Bridge Commands</h2>
+<div class="code-block"><div class="code-header"><span class="code-lang">PowerShell / Terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><span class="cm"># Setup</span>
+pip install requests openpyxl
+
+<span class="cm"># Test connection (reads API key from Excel Connection sheet)</span>
+python t1_excel_bridge.py connect
+
+<span class="cm"># Load all available tickers into Instruments sheet</span>
+python t1_excel_bridge.py instruments
+
+<span class="cm"># Execute batch orders from Order Entry sheet (all rows with Execute=YES)</span>
+python t1_excel_bridge.py trade
+
+<span class="cm"># Execute single order from Quick Trade sheet</span>
+python t1_excel_bridge.py quick
+
+<span class="cm"># Refresh positions + order history from the API</span>
+python t1_excel_bridge.py refresh
+
+<span class="cm"># Full sync: connect + instruments + refresh</span>
+python t1_excel_bridge.py all</pre></div>
+</section>
+
+<div class="sep"></div>
+
+<!-- CODE EXAMPLES -->
+<section id="example-python">
+<h2>Python Example</h2>
+<div class="code-block"><div class="code-header"><span class="code-lang">Python 3</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><span class="kw">import</span> requests
+
+API_KEY = <span class="str">"t1_live_your_api_key_here"</span>
+BASE    = <span class="str">"https://t1broker.com/api/v1"</span>
+HEADERS = {<span class="str">"X-API-Key"</span>: API_KEY, <span class="str">"Content-Type"</span>: <span class="str">"application/json"</span>}
+
+<span class="cm"># Search for Apple stock</span>
+instruments = requests.<span class="fn">get</span>(f<span class="str">"{BASE}/market/instruments?search=AAPL"</span>, headers=HEADERS).<span class="fn">json</span>()
+aapl_id = instruments[<span class="str">"data"</span>][<span class="num">0</span>][<span class="str">"id"</span>]
+
+<span class="cm"># Place a limit buy order</span>
+order = requests.<span class="fn">post</span>(f<span class="str">"{BASE}/orders"</span>, headers=HEADERS, json={
+    <span class="str">"instrumentId"</span>: aapl_id,
+    <span class="str">"side"</span>: <span class="str">"buy"</span>,
+    <span class="str">"orderType"</span>: <span class="str">"limit"</span>,
+    <span class="str">"quantity"</span>: <span class="num">50</span>,
+    <span class="str">"price"</span>: <span class="num">185.00</span>,
+    <span class="str">"timeInForce"</span>: <span class="str">"gtc"</span>
+})
+<span class="fn">print</span>(order.<span class="fn">json</span>())
+
+<span class="cm"># View positions</span>
+positions = requests.<span class="fn">get</span>(f<span class="str">"{BASE}/positions"</span>, headers=HEADERS).<span class="fn">json</span>()
+<span class="kw">for</span> p <span class="kw">in</span> positions[<span class="str">"data"</span>]:
+    <span class="fn">print</span>(f<span class="str">"{p['symbol']}: {p['quantity']} @ {p['avgCost']} | P&L: ${p['unrealizedPnl']:.2f}"</span>)
+
+<span class="cm"># Cancel an order</span>
+requests.<span class="fn">delete</span>(f<span class="str">"{BASE}/orders/{order.json()['data']['id']}"</span>, headers=HEADERS)
+
+<span class="cm"># Batch: place 3 orders simultaneously across different tickers</span>
+batch = requests.<span class="fn">post</span>(f<span class="str">"{BASE}/orders/batch"</span>, headers=HEADERS, json={
+    <span class="str">"orders"</span>: [
+        {<span class="str">"instrumentId"</span>: <span class="num">1</span>, <span class="str">"side"</span>: <span class="str">"buy"</span>,  <span class="str">"orderType"</span>: <span class="str">"market"</span>, <span class="str">"quantity"</span>: <span class="num">50</span>},
+        {<span class="str">"instrumentId"</span>: <span class="num">9</span>, <span class="str">"side"</span>: <span class="str">"buy"</span>,  <span class="str">"orderType"</span>: <span class="str">"limit"</span>,  <span class="str">"quantity"</span>: <span class="num">0.1</span>, <span class="str">"price"</span>: <span class="num">95000</span>},
+        {<span class="str">"instrumentId"</span>: <span class="num">3</span>, <span class="str">"side"</span>: <span class="str">"sell"</span>, <span class="str">"orderType"</span>: <span class="str">"market"</span>, <span class="str">"quantity"</span>: <span class="num">25</span>},
+    ]
+})
+<span class="fn">print</span>(f<span class="str">"Batch: {batch.json()['placed']} placed, {batch.json()['failed']} failed"</span>)</pre></div>
+</section>
+
+<section id="example-node">
+<h2>Node.js Example</h2>
+<div class="code-block"><div class="code-header"><span class="code-lang">JavaScript (Node.js)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><span class="kw">const</span> API_KEY = <span class="str">'t1_live_your_api_key_here'</span>;
+<span class="kw">const</span> BASE = <span class="str">'https://t1broker.com/api/v1'</span>;
+<span class="kw">const</span> headers = { <span class="str">'X-API-Key'</span>: API_KEY, <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> };
+
+<span class="cm">// Place a market buy order</span>
+<span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`${BASE}/orders`</span>, {
+  method: <span class="str">'POST'</span>,
+  headers,
+  body: JSON.<span class="fn">stringify</span>({
+    instrumentId: <span class="num">9</span>,          <span class="cm">// BTC/USD</span>
+    side: <span class="str">'buy'</span>,
+    orderType: <span class="str">'market'</span>,
+    quantity: <span class="num">0.5</span>
+  })
+});
+<span class="kw">const</span> order = <span class="kw">await</span> res.<span class="fn">json</span>();
+console.<span class="fn">log</span>(<span class="str">'Order placed:'</span>, order.data.id, order.data.status);
+
+<span class="cm">// Get all open positions</span>
+<span class="kw">const</span> pos = <span class="kw">await</span> (<span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`${BASE}/positions`</span>, { headers })).<span class="fn">json</span>();
+pos.data.<span class="fn">forEach</span>(p =>
+  console.<span class="fn">log</span>(<span class="str">`${p.symbol}: ${p.quantity} shares, P&L: $${p.unrealizedPnl}`</span>)
+);</pre></div>
+</section>
+
+<section id="example-powershell">
+<h2>PowerShell Example</h2>
+<div class="code-block"><div class="code-header"><span class="code-lang">PowerShell</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><span class="kw">$ApiKey</span> = <span class="str">"t1_live_your_api_key_here"</span>
+<span class="kw">$Base</span>   = <span class="str">"https://t1broker.com/api/v1"</span>
+<span class="kw">$Headers</span> = @{ <span class="str">"X-API-Key"</span> = <span class="kw">$ApiKey</span> }
+
+<span class="cm"># Search instruments</span>
+<span class="kw">$instruments</span> = Invoke-RestMethod -Uri <span class="str">"$Base/market/instruments?search=AAPL"</span> -Headers <span class="kw">$Headers</span>
+<span class="kw">$instruments</span>.data | Format-Table symbol, name, last_price, exchange
+
+<span class="cm"># Place order</span>
+<span class="kw">$order</span> = Invoke-RestMethod -Uri <span class="str">"$Base/orders"</span> -Method POST -Headers <span class="kw">$Headers</span> `
+  -ContentType <span class="str">"application/json"</span> -Body (@{
+    instrumentId = <span class="num">1</span>
+    side = <span class="str">"buy"</span>
+    orderType = <span class="str">"market"</span>
+    quantity = <span class="num">10</span>
+  } | ConvertTo-Json)
+Write-Host <span class="str">"Order placed: $($order.data.id) — $($order.data.status)"</span>
+
+<span class="cm"># Get positions</span>
+<span class="kw">$positions</span> = Invoke-RestMethod -Uri <span class="str">"$Base/positions"</span> -Headers <span class="kw">$Headers</span>
+<span class="kw">$positions</span>.data | Format-Table symbol, quantity, avgCost, unrealizedPnl
+
+<span class="cm"># Batch: place multiple orders at once</span>
+<span class="kw">$batch</span> = Invoke-RestMethod -Uri <span class="str">"$Base/orders/batch"</span> -Method POST -Headers <span class="kw">$Headers</span> `
+  -ContentType <span class="str">"application/json"</span> -Body (@{
+    orders = @(
+      @{instrumentId=1; side=<span class="str">"buy"</span>;  orderType=<span class="str">"market"</span>; quantity=100},
+      @{instrumentId=9; side=<span class="str">"buy"</span>;  orderType=<span class="str">"limit"</span>;  quantity=0.5; price=95000},
+      @{instrumentId=3; side=<span class="str">"sell"</span>; orderType=<span class="str">"market"</span>; quantity=50}
+    )
+  } | ConvertTo-Json -Depth 3)
+Write-Host <span class="str">"Batch: $($batch.placed) placed, $($batch.failed) failed"</span></pre></div>
+</section>
+
+<section id="example-curl">
+<h2>cURL Example</h2>
+<div class="code-block"><div class="code-header"><span class="code-lang">Bash / cURL</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+<pre><span class="cm"># Set your API key</span>
+<span class="kw">export</span> T1_KEY=<span class="str">"t1_live_your_api_key_here"</span>
+
+<span class="cm"># Get positions</span>
+curl -s -H <span class="str">"X-API-Key: $T1_KEY"</span> https://t1broker.com/api/v1/positions | jq
+
+<span class="cm"># Place a market buy order</span>
+curl -s -X POST https://t1broker.com/api/v1/orders \
+  -H <span class="str">"X-API-Key: $T1_KEY"</span> \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{"instrumentId":1,"side":"buy","orderType":"market","quantity":10}'</span> | jq
+
+<span class="cm"># Cancel an order</span>
+curl -s -X DELETE -H <span class="str">"X-API-Key: $T1_KEY"</span> https://t1broker.com/api/v1/orders/12847
+
+<span class="cm"># List your API keys</span>
+curl -s -H <span class="str">"X-API-Key: $T1_KEY"</span> https://t1broker.com/api/v1/api-keys | jq</pre></div>
+</section>
+
+<div style="text-align:center;padding:60px 0;color:var(--text3);font-size:13px">
+  <p>&copy; 2025 T1 Broker Ltd. All rights reserved.</p>
+  <p style="margin-top:8px"><a href="/landing.html">Home</a> &middot; <a href="/signup.html">Sign Up</a> &middot; <a href="/index.html">Trading Platform</a> &middot; <a href="/terms.html">Terms</a> &middot; <a href="/privacy.html">Privacy</a></p>
+</div>
+
+</main>
+</div>
+
+<script>
+// Sidebar active state on scroll
+const sections=document.querySelectorAll('section[id]');
+const links=document.querySelectorAll('.sb-link');
+window.addEventListener('scroll',()=>{
+  let current='';
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)current=s.id;});
+  links.forEach(l=>{l.classList.toggle('active',l.getAttribute('href')==='#'+current);});
+});
+// Copy code
+function copyCode(btn){
+  const pre=btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500);});
+}
+</script>
+</body>
+</html>

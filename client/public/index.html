@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f1c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="T1 Broker">
+<meta name="description" content="T1 Broker — Multi-asset trading platform">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<title>T1 Broker Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+<style>
+:root{--bg0:#060a11;--bg1:#0a0f1a;--bg2:#111827;--bg3:#1a2234;--bg4:#1e2a40;--bgc:#131b2e;--bgh:#1a2540;--bgi:#0f1726;--bd:#1c2a42;--bdl:#243352;--t0:#f1f5f9;--t1:#e2e8f0;--t2:#94a3b8;--t3:#64748b;--t4:#475569;--blue:#3b82f6;--blued:rgba(59,130,246,.12);--blueg:rgba(59,130,246,.25);--green:#10b981;--greend:rgba(16,185,129,.1);--red:#ef4444;--redd:rgba(239,68,68,.1);--yellow:#f59e0b;--yellowd:rgba(245,158,11,.1);--purple:#8b5cf6;--purpled:rgba(139,92,246,.1);--sans:'DM Sans',sans-serif;--mono:'JetBrains Mono',monospace;--r:8px;--tr:.15s ease}
+*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}
+body{font-family:var(--sans);background:var(--bg0);color:var(--t1);-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:10px}
+input,select,textarea,button{font-family:inherit}a{color:var(--blue);text-decoration:none}
+.mono{font-family:var(--mono)}.green{color:var(--green)}.red{color:var(--red)}.yellow{color:var(--yellow)}.blue{color:var(--blue)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--mono)}
+.badge-green{background:var(--greend);color:var(--green)}.badge-red{background:var(--redd);color:var(--red)}.badge-yellow{background:var(--yellowd);color:var(--yellow)}.badge-blue{background:var(--blued);color:var(--blue)}.badge-purple{background:var(--purpled);color:var(--purple)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all var(--tr)}
+.btn-primary{background:var(--blue);color:#fff;box-shadow:0 2px 8px var(--blueg)}.btn-primary:hover{background:#2563eb;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--t2);border-color:var(--bd)}.btn-ghost:hover{border-color:var(--bdl);color:var(--t1);background:var(--bgh)}
+.btn-green{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(16,185,129,.25)}.btn-red{background:var(--red);color:#fff}
+.btn-sm{padding:6px 12px;font-size:12px}
+.input,.sel{width:100%;padding:10px 12px;background:var(--bgi);border:1px solid var(--bd);border-radius:var(--r);color:var(--t1);font-size:13px;outline:none;transition:border-color var(--tr)}
+.input:focus,.sel:focus{border-color:var(--blue)}.input::placeholder{color:var(--t4)}.sel{appearance:none;cursor:pointer}
+.flabel{display:block;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.card{background:var(--bgc);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.card-h{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.card-t{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--t2)}
+.dtable{width:100%;border-collapse:collapse}
+.dtable th{text-align:left;padding:10px 16px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;background:var(--bg2);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:2}
+.dtable td{padding:10px 16px;border-bottom:1px solid rgba(28,42,66,.4);font-size:12px;font-family:var(--mono)}
+.dtable tr:hover td{background:var(--bgh)}
+.dtable th.r,.dtable td.r{text-align:right}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--bd)}
+.tab{padding:10px 16px;font-size:12px;font-weight:600;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all var(--tr);display:flex;align-items:center;gap:6px}
+.tab:hover{color:var(--t2)}.tab.active{color:var(--blue);border-color:var(--blue)}
+.tab-c{font-size:10px;padding:1px 6px;border-radius:10px;background:var(--bg3);font-family:var(--mono)}.tab.active .tab-c{background:var(--blued);color:var(--blue)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes flashG{0%{background:rgba(16,185,129,.15)}100%{background:transparent}}
+@keyframes flashR{0%{background:rgba(239,68,68,.15)}100%{background:transparent}}
+.anim{animation:fadeIn .3s ease-out}.flash-up{animation:flashG .4s ease-out}.flash-dn{animation:flashR .4s ease-out}
+.ldot{width:6px;height:6px;background:var(--green);border-radius:50%;display:inline-block;animation:pulse 2s infinite}
+.hidden{display:none!important}
+
+/* Login */
+#loginPage{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:var(--bg0);background-image:radial-gradient(ellipse at 20% 50%,rgba(59,130,246,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(139,92,246,.04) 0%,transparent 50%)}
+.lcon{width:400px;max-width:90vw;animation:fadeIn .5s ease-out}
+.llogo{display:flex;align-items:center;gap:12px;margin-bottom:40px;justify-content:center}
+.llogo-i{width:44px;height:44px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;box-shadow:0 4px 20px rgba(59,130,246,.3)}
+.llogo-t{font-size:24px;font-weight:700;letter-spacing:-.5px}
+.lcard{background:var(--bg2);border:1px solid var(--bd);border-radius:16px;padding:36px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.lfg{margin-bottom:18px}
+.linput{width:100%;padding:12px 14px;background:var(--bgi);border:1px solid var(--bd);border-radius:var(--r);color:var(--t1);font-size:14px;outline:none;transition:border-color var(--tr)}
+.linput:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blued)}.linput::placeholder{color:var(--t4)}
+.lbtn{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;transition:all var(--tr);box-shadow:0 4px 16px var(--blueg)}
+.lbtn:hover{background:#2563eb;transform:translateY(-1px)}
+/* Login card styles */
+
+/* Top Bar */
+#appShell{display:none;height:100vh;flex-direction:column}#appShell.show{display:flex}
+.topbar{height:50px;background:var(--bg2);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;z-index:50}
+.tl{display:flex;align-items:center;gap:20px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-i{width:30px;height:30px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff}
+.logo-t{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.tnav{display:flex;gap:2px}
+.tnav-i{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;transition:all var(--tr)}
+.tnav-i:hover{color:var(--t1);background:var(--bgh)}.tnav-i.active{color:var(--blue);background:var(--blued)}
+.tr{display:flex;align-items:center;gap:12px}
+.secbadge{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--green);padding:3px 10px;background:var(--greend);border-radius:20px;font-weight:500}
+.abal{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--green);background:var(--greend);padding:4px 12px;border-radius:6px}
+.nbtn{width:34px;height:34px;border-radius:var(--r);background:var(--bg3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;position:relative}
+.ndot{width:7px;height:7px;background:var(--red);border-radius:50%;position:absolute;top:5px;right:5px}
+.umenu{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 8px;border-radius:var(--r)}
+.umenu:hover{background:var(--bgh)}
+.uavatar{width:32px;height:32px;border-radius:var(--r);background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+.uname{font-size:12px;font-weight:600}.urole{font-size:10px;color:var(--t3)}
+.mainarea{flex:1;display:flex;overflow:hidden}
+
+/* Sidebar */
+.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--bd);flex-shrink:0;display:flex;flex-direction:column;padding:12px 0;overflow-y:auto}
+.slabel{font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1px;padding:8px 24px 6px}
+.sitem{display:flex;align-items:center;gap:10px;padding:9px 24px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;transition:all var(--tr);margin:1px 12px;border-radius:var(--r)}
+.sitem:hover{background:var(--bgh);color:var(--t1)}.sitem.active{background:var(--blued);color:var(--blue)}
+.sicon{width:18px;text-align:center;font-size:14px}
+.pagec{flex:1;overflow-y:auto;overflow-x:hidden}
+
+/* Trading Layout */
+.tlay{display:grid;grid-template-columns:270px 1fr 310px;height:100%}
+.wlpanel{background:var(--bg2);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
+.sbox{margin:8px 10px;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:8px 10px;display:flex;align-items:center;gap:8px}
+.sbox input{background:transparent;border:none;outline:none;color:var(--t1);font-size:12px;width:100%}.sbox input::placeholder{color:var(--t4)}
+.wltabs{display:flex;padding:0 10px;border-bottom:1px solid var(--bd)}
+.wltab{padding:7px 10px;font-size:11px;font-weight:600;color:var(--t4);cursor:pointer;border-bottom:2px solid transparent;transition:all var(--tr)}
+.wltab.active{color:var(--blue);border-color:var(--blue)}
+.wlitems{flex:1;overflow-y:auto;padding:2px 0}
+.wli{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;padding:9px 14px;cursor:pointer;transition:background .1s;border-left:3px solid transparent}
+.wli:hover{background:var(--bgh)}.wli.active{background:var(--bgh);border-left-color:var(--blue)}
+.wls{font-weight:600;font-size:12px;letter-spacing:-.3px}.wln{font-size:10px;color:var(--t4);margin-top:1px}
+.wlp{font-family:var(--mono);font-size:12px;font-weight:500;text-align:right}
+.wlch{font-family:var(--mono);font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;text-align:right;min-width:60px;display:flex;align-items:center;justify-content:flex-end}
+.wlch.up{color:var(--green);background:var(--greend)}.wlch.dn{color:var(--red);background:var(--redd)}
+
+/* Chart panel */
+.cpanel{display:flex;flex-direction:column;overflow:hidden}
+.instbar{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--bg2);border-bottom:1px solid var(--bd);flex-shrink:0}
+.isym{font-size:18px;font-weight:700;letter-spacing:-.5px}
+.iex{font-size:10px;color:var(--t3);background:var(--bg3);padding:2px 7px;border-radius:4px;font-weight:600}
+.iprice{font-family:var(--mono);font-size:22px;font-weight:700}
+.ichg{font-family:var(--mono);font-size:13px;font-weight:600}
+.ctrls{display:flex;gap:2px}
+.tfb{padding:5px 9px;border-radius:5px;font-size:11px;font-weight:600;color:var(--t4);cursor:pointer;background:transparent;border:none;font-family:var(--mono);transition:all .1s}
+.tfb:hover{color:var(--t2);background:var(--bgh)}.tfb.active{color:var(--blue);background:var(--blued)}
+.carea{flex:1;min-height:0;position:relative;background:var(--bg1)}
+.carea canvas{width:100%;height:100%}
+.covl{position:absolute;top:10px;left:14px;display:flex;gap:16px}
+.ohlc{font-size:10px;color:var(--t4)}.ohlc span{font-family:var(--mono);font-size:11px;color:var(--t2);margin-left:3px}
+.bsec{height:200px;background:var(--bg2);border-top:1px solid var(--bd);display:flex;flex-direction:column;flex-shrink:0}
+.bcont{flex:1;overflow:auto}
+
+/* Order panel */
+.opanel{background:var(--bg2);border-left:1px solid var(--bd);display:flex;flex-direction:column;overflow-y:auto}
+.stog{display:flex;margin:10px 14px 6px;background:var(--bg3);border-radius:var(--r);padding:3px}
+.sbtn{flex:1;padding:8px;text-align:center;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;transition:all var(--tr);color:var(--t3);border:none;background:transparent}
+.sbtn.ba{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(16,185,129,.3)}
+.sbtn.sa{background:var(--red);color:#fff;box-shadow:0 2px 8px rgba(239,68,68,.3)}
+.oform{padding:10px 14px}.fg{margin-bottom:10px}
+.qr{display:grid;grid-template-columns:34px 1fr 34px;gap:4px}
+.qb{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);color:var(--t2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}.qb:hover{border-color:var(--blue);color:var(--blue)}
+.qsc{display:flex;gap:3px;margin-top:5px}
+.qsi{flex:1;padding:3px;text-align:center;font-size:10px;font-weight:600;color:var(--t4);background:var(--bg3);border-radius:4px;cursor:pointer;font-family:var(--mono)}.qsi:hover{color:var(--t2);background:var(--bg4)}
+.osum{background:var(--bg3);border-radius:var(--r);padding:10px;margin-bottom:10px}
+.osr{display:flex;justify-content:space-between;padding:3px 0}
+.osl{font-size:11px;color:var(--t3)}.osv{font-family:var(--mono);font-size:11px;font-weight:500}
+.osd{border-top:1px solid var(--bd);margin:5px 0}
+.ost .osl{font-weight:600;color:var(--t2)}.ost .osv{font-size:13px;font-weight:700;color:var(--t0)}
+.subo{width:100%;padding:12px;border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all var(--tr)}
+.subo.buy{background:var(--green);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,.25)}
+.subo.sell{background:var(--red);color:#fff;box-shadow:0 4px 12px rgba(239,68,68,.25)}
+.subo:hover{transform:translateY(-1px)}
+.domsec{padding:10px 14px;border-top:1px solid var(--bd)}
+.domtit{font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.domr{display:grid;grid-template-columns:1fr auto 1fr;gap:3px;margin-bottom:2px;font-family:var(--mono);font-size:10px;height:20px;align-items:center}
+.dbb,.dab{height:100%;display:flex;align-items:center;position:relative;border-radius:2px}
+.dbb{justify-content:flex-end;padding-right:5px}.dab{padding-left:5px}
+.dbb .bf,.dab .bf{position:absolute;top:0;bottom:0}
+.dbb .bf{right:0;background:rgba(16,185,129,.12)}.dab .bf{left:0;background:rgba(239,68,68,.12)}
+.dbb .bt{position:relative;z-index:1;color:var(--green)}.dab .bt{position:relative;z-index:1;color:var(--red)}
+.domp{text-align:center;font-weight:600;color:var(--t2);font-size:10px}
+.sprd{text-align:center;font-size:9px;color:var(--t4);padding:3px 0;border-top:1px dashed var(--bd);border-bottom:1px dashed var(--bd);margin:3px 0;font-family:var(--mono)}
+.asec{padding:10px 14px;border-top:1px solid var(--bd);margin-top:auto}
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.aitm{background:var(--bg3);border-radius:6px;padding:7px 9px}
+.albl{font-size:9px;color:var(--t4);margin-bottom:2px;text-transform:uppercase;letter-spacing:.3px}
+.aval{font-family:var(--mono);font-size:12px;font-weight:600}
+
+/* Portfolio */
+.ppage{padding:24px}.pval{font-family:var(--mono);font-size:36px;font-weight:700}
+.pchg{font-family:var(--mono);font-size:14px;margin-top:4px}
+.scards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.scard{background:var(--bgc);border:1px solid var(--bd);border-radius:12px;padding:18px}
+.slbl{font-size:12px;color:var(--t3);margin-bottom:6px}.sval{font-family:var(--mono);font-size:20px;font-weight:700}.ssub{font-size:11px;color:var(--t3);margin-top:4px}
+.allocgrid{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.alloci{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(28,42,66,.3)}.alloci:last-child{border:none}
+.allocc{width:10px;height:10px;border-radius:3px;margin-right:10px}
+
+/* Admin */
+.apage{padding:24px}.atitle{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px}.asub{font-size:13px;color:var(--t3)}
+.astats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.astatc{background:var(--bgc);border:1px solid var(--bd);border-radius:12px;padding:20px;position:relative;overflow:hidden}
+.astatc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.astatc.ba::before{background:var(--blue)}.astatc.ga::before{background:var(--green)}.astatc.pa::before{background:var(--purple)}.astatc.ya::before{background:var(--yellow)}
+.asi{font-size:20px;margin-bottom:12px}.asv{font-family:var(--mono);font-size:24px;font-weight:700}.asl{font-size:12px;color:var(--t3);margin-top:4px}.asch{font-size:11px;margin-top:6px;font-family:var(--mono);font-weight:600}
+.agrd{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.afeed{max-height:300px;overflow-y:auto}
+.afi{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(28,42,66,.3)}.afi:last-child{border:none}
+.afic{width:32px;height:32px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.aft{font-size:12px;line-height:1.5}.aftm{font-size:10px;color:var(--t4);margin-top:2px;font-family:var(--mono)}
+.fchips{display:flex;gap:8px}
+.fchip{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;transition:all var(--tr);background:var(--bg3);color:var(--t3);border:1px solid var(--bd)}
+.fchip.active{background:var(--blued);color:var(--blue);border-color:var(--blue)}
+.loglvl{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;font-family:var(--mono)}
+.log-i{background:var(--blued);color:var(--blue)}.log-w{background:var(--yellowd);color:var(--yellow)}.log-c{background:var(--redd);color:var(--red)}.log-s{background:var(--greend);color:var(--green)}
+.rcards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.rcard{background:var(--bgc);border:1px solid var(--bd);border-radius:12px;padding:20px;cursor:pointer;transition:all var(--tr)}
+.rcard:hover{border-color:var(--bdl);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.ricn{font-size:28px;margin-bottom:12px}.rtit{font-size:14px;font-weight:600;margin-bottom:4px}.rdesc{font-size:12px;color:var(--t3);line-height:1.5}
+.pcards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.pcard{background:var(--bgc);border:1px solid var(--bd);border-radius:12px;padding:24px}
+.pname{font-size:16px;font-weight:700;margin-bottom:4px}.pmeta{font-size:12px;color:var(--t3);margin-bottom:16px}
+.pstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.psl{font-size:10px;color:var(--t4);text-transform:uppercase;margin-bottom:2px}.psv{font-family:var(--mono);font-size:14px;font-weight:600}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;z-index:9999;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:14px 20px;box-shadow:0 8px 24px rgba(0,0,0,.4);display:flex;align-items:center;gap:10px;font-size:13px;animation:fadeIn .3s ease-out;max-width:400px}
+.toast.s{border-left:3px solid var(--green)}.toast.e{border-left:3px solid var(--red)}.toast.i{border-left:3px solid var(--blue)}
+
+/* Modal */
+.movl{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease}
+.modal{background:var(--bg2);border:1px solid var(--bd);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.4);width:520px;max-width:90vw;max-height:80vh;overflow-y:auto;animation:fadeIn .3s ease-out}
+.mhdr{padding:20px 24px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+.mtit{font-size:16px;font-weight:700}
+.mcls{width:30px;height:30px;border-radius:var(--r);background:var(--bg3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--t3)}.mcls:hover{background:var(--bg4);color:var(--t1)}
+.mbod{padding:24px}
+.mftr{padding:16px 24px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:8px}
+
+@media(max-width:1200px){.tlay{grid-template-columns:240px 1fr 280px}.astats,.scards{grid-template-columns:repeat(2,1fr)}}
+/* ── RESPONSIVE / MOBILE ── */
+@media(max-width:1024px){
+  .tlay{grid-template-columns:1fr !important;height:auto}.tpanel,.trpanel{display:none}
+  .agrd{grid-template-columns:1fr !important}
+  .astats{flex-wrap:wrap}.astatc{min-width:calc(50% - 8px)}
+}
+@media(max-width:768px){
+  .sidebar{position:fixed;left:-260px;top:56px;bottom:0;z-index:100;transition:left .2s;width:260px}
+  .sidebar.open{left:0;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+  .mainarea{margin-left:0 !important}
+  .tbar{padding:0 12px}
+  .pagec{padding:0 !important}
+  .apage{padding:12px !important}
+  .astats{gap:8px}.astatc{min-width:100%}
+  .lcon{padding:20px;min-height:100vh;min-height:100dvh}
+  .lcard{padding:24px}
+  .dtable{font-size:11px}.dtable td,.dtable th{padding:6px 8px}
+  body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+}
+@media(max-width:480px){
+  .tlay{grid-template-columns:1fr !important}
+  .agrd{grid-template-columns:1fr !important}
+  .scards{flex-direction:column}
+  .scard{min-width:100%}
+  .atitle{font-size:22px}
+  .llogo-t{font-size:22px}
+}
+/* Mobile nav hamburger */
+.hamburger{display:none;cursor:pointer;padding:8px;font-size:20px}
+@media(max-width:768px){.hamburger{display:block}}
+</style>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage">
+<div class="lcon">
+  <div class="llogo"><div class="llogo-i">T1</div><div class="llogo-t">T1 Broker</div></div>
+  <div class="lcard">
+    <!-- Step 1: Credentials -->
+    <div id="loginStep1">
+      <div style="font-size:20px;font-weight:700;margin-bottom:4px">Welcome back</div>
+      <div style="font-size:13px;color:var(--t3);margin-bottom:28px">Sign in to your trading platform</div>
+      <div class="lfg"><label class="flabel">Email</label><input class="linput" id="loginEmail" type="email" placeholder="you@email.com"></div>
+      <div class="lfg"><label class="flabel">Password</label><input class="linput" id="loginPw" type="password" placeholder="••••••••"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;font-size:13px">
+        <label style="display:flex;align-items:center;gap:6px;color:var(--t2);cursor:pointer"><input type="checkbox" checked style="accent-color:var(--blue)"> Remember me</label>
+        <span style="color:var(--blue);cursor:pointer">Forgot password?</span>
+      </div>
+      <button class="lbtn" id="loginBtn" onclick="doLogin()">Sign In</button>
+      <div id="loginErr" style="margin-top:12px;font-size:12px;color:var(--red);text-align:center;display:none"></div>
+      <div style="margin-top:16px;text-align:center;font-size:13px;color:var(--t3)">Don't have an account? <a href="/signup.html" style="color:var(--blue);font-weight:600">Sign Up</a></div>
+    </div>
+    <!-- Step 2: MFA Verification -->
+    <div id="loginStep2" style="display:none">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span style="cursor:pointer;font-size:18px" onclick="backToLogin()">←</span>
+        <div style="font-size:20px;font-weight:700">Two-Factor Authentication</div>
+      </div>
+      <div id="mfaInstructions" style="font-size:13px;color:var(--t3);margin-bottom:24px">Enter the code from your authenticator app</div>
+      <div class="lfg">
+        <label class="flabel" id="mfaCodeLabel">VERIFICATION CODE</label>
+        <input class="linput mono" id="mfaCodeInput" type="text" maxlength="10" placeholder="000000" autocomplete="one-time-code"
+          style="font-size:24px;text-align:center;letter-spacing:8px;padding:16px">
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px">
+        <input type="checkbox" id="mfaTrustDevice" style="accent-color:var(--blue)">
+        <label for="mfaTrustDevice" style="font-size:12px;color:var(--t2);cursor:pointer">Trust this device for 30 days</label>
+      </div>
+      <button class="lbtn" id="mfaVerifyBtn" onclick="doMFAVerify()">Verify</button>
+      <div id="mfaErr" style="margin-top:12px;font-size:12px;color:var(--red);text-align:center;display:none"></div>
+      <div id="mfaAlt" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:8px;align-items:center">
+        <div id="mfaResendBtn" style="display:none;font-size:12px;color:var(--blue);cursor:pointer" onclick="resendEmailCode()">📧 Resend email code</div>
+        <div id="mfaUseBackup" style="font-size:12px;color:var(--t3);cursor:pointer" onclick="switchMFAMethod('backup')">🔑 Use a backup code instead</div>
+        <div id="mfaSwitchEmail" style="display:none;font-size:12px;color:var(--t3);cursor:pointer" onclick="switchMFAMethod('email')">📧 Send code to email instead</div>
+        <div id="mfaSwitchTotp" style="display:none;font-size:12px;color:var(--t3);cursor:pointer" onclick="switchMFAMethod('totp')">📱 Use authenticator app</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--bd);text-align:center;font-size:12px;color:var(--t3)">🔐 Two-factor authentication supported</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:24px;font-size:11px;color:var(--t3)">🔒 256-bit TLS · SOC2 Compliant</div>
+  </div>
+</div>
+</div>
+
+<!-- APP SHELL -->
+<div id="appShell">
+<div class="topbar">
+  <div class="tl">
+    <div class="hamburger" onclick="toggleSidebar()">☰</div>
+    <div class="logo"><div class="logo-i">T1</div><span class="logo-t">T1 Broker</span></div>
+    <div class="tnav" id="topNav"></div>
+  </div>
+  <div class="tr">
+    <div class="secbadge">🔒 Encrypted</div>
+    <div class="abal" id="topBal">$248,532.67</div>
+    <div class="nbtn" onclick="toast('3 new notifications','i')">🔔<div class="ndot"></div></div>
+    <div class="umenu" onclick="doLogout()">
+      <div class="uavatar" id="uavTop">JD</div>
+      <div><div class="uname" id="unTop">John Doe</div><div class="urole" id="urTop">Client</div></div>
+    </div>
+  </div>
+</div>
+<div class="mainarea">
+  <div class="sidebar hidden" id="sidebar"></div>
+  <div class="pagec" id="pagec"></div>
+</div>
+</div>
+<div id="modalC"></div>
+<div id="toastC" style="position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px"></div>
+<script>
+// ================================================================
+// STATE + DATA
+// ================================================================
+const S={user:null,page:'trading',role:'client',sym:0,side:'buy',live:null};
+const fmt=p=>{if(p>1e3)return p.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});if(p<10)return p.toFixed(4);return p.toFixed(2)};
+const fmtM=v=>'$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtC=v=>{if(v>=1e9)return'$'+(v/1e9).toFixed(1)+'B';if(v>=1e6)return'$'+(v/1e6).toFixed(1)+'M';if(v>=1e3)return'$'+(v/1e3).toFixed(0)+'K';return'$'+v.toFixed(0)};
+const $=s=>document.querySelector(s);const $$=s=>document.querySelectorAll(s);
+
+const Users={
+  client:{id:'USR001',name:'John Doe',email:'john@email.com',role:'Client',ini:'JD'},
+  admin:{id:'ADM001',name:'Sarah Chen',email:'sarah@t1broker.com',role:'Admin',ini:'SC'},
+  partner:{id:'PTR001',name:'Ahmed Al-Rashid',email:'ahmed@dubaibrokerage.ae',role:'Partner — Dubai',ini:'AR'}
+};
+
+const WL=[
+  {s:'AAPL',n:'Apple Inc.',p:189.84,c:1.25,x:'NASDAQ'},
+  {s:'MSFT',n:'Microsoft',p:417.52,c:0.87,x:'NASDAQ'},
+  {s:'NVDA',n:'NVIDIA Corp.',p:875.28,c:3.42,x:'NASDAQ'},
+  {s:'TSLA',n:'Tesla Inc.',p:248.91,c:-2.15,x:'NASDAQ'},
+  {s:'AMZN',n:'Amazon.com',p:178.32,c:0.54,x:'NASDAQ'},
+  {s:'GOOGL',n:'Alphabet',p:141.56,c:-0.34,x:'NASDAQ'},
+  {s:'META',n:'Meta Platforms',p:485.22,c:2.10,x:'NASDAQ'},
+  {s:'JPM',n:'JPMorgan Chase',p:198.45,c:0.42,x:'NYSE'},
+  {s:'BTC/USD',n:'Bitcoin',p:97842.50,c:1.87,x:'CRYPTO'},
+  {s:'ETH/USD',n:'Ethereum',p:3456.12,c:-0.92,x:'CRYPTO'},
+  {s:'EUR/USD',n:'Euro/Dollar',p:1.0842,c:-0.12,x:'FX'},
+  {s:'GBP/USD',n:'Pound/Dollar',p:1.2634,c:0.08,x:'FX'},
+  {s:'SPY',n:'S&P 500 ETF',p:502.34,c:0.67,x:'NYSE'},
+  {s:'QQQ',n:'Nasdaq 100 ETF',p:437.89,c:1.12,x:'NASDAQ'}
+];
+
+const Pos=[
+  {s:'AAPL',side:'Long',q:200,avg:182.50,last:189.84},
+  {s:'NVDA',side:'Long',q:50,avg:845.00,last:875.28},
+  {s:'TSLA',side:'Short',q:30,avg:255.20,last:248.91},
+  {s:'BTC/USD',side:'Long',q:0.5,avg:92000,last:97842.50},
+  {s:'EUR/USD',side:'Long',q:10000,avg:1.0810,last:1.0842},
+  {s:'META',side:'Long',q:75,avg:462.10,last:485.22}
+];
+
+const OO=[
+  {id:'ORD-4821',s:'AAPL',side:'Buy',type:'Limit',q:50,p:185.00,st:'Working',t:'14:32:15'},
+  {id:'ORD-4820',s:'GOOGL',side:'Buy',type:'Stop',q:100,p:138.00,st:'Working',t:'14:28:41'},
+  {id:'ORD-4818',s:'MSFT',side:'Sell',type:'Limit',q:25,p:425.00,st:'Working',t:'13:55:02'}
+];
+
+const OH=[
+  {id:'ORD-4817',s:'NVDA',side:'Buy',type:'Market',q:10,fp:874.52,st:'Filled',t:'13:42:18'},
+  {id:'ORD-4815',s:'META',side:'Buy',type:'Limit',q:75,fp:462.10,st:'Filled',t:'12:15:33'},
+  {id:'ORD-4812',s:'SPY',side:'Sell',type:'Market',q:200,fp:501.87,st:'Filled',t:'11:30:22'},
+  {id:'ORD-4810',s:'BTC/USD',side:'Buy',type:'Limit',q:0.25,fp:96500.00,st:'Filled',t:'10:22:45'},
+  {id:'ORD-4808',s:'TSLA',side:'Sell',type:'Market',q:30,fp:255.18,st:'Filled',t:'09:45:11'}
+];
+
+const Clients=[
+  {id:'CLT-001',n:'John Doe',e:'john@email.com',st:'Active',kyc:'Approved',aum:248532.67,risk:'Medium',co:'US',type:'Retail'},
+  {id:'CLT-002',n:'Alice Smith',e:'alice@corp.com',st:'Active',kyc:'Approved',aum:1245680.50,risk:'High',co:'UK',type:'Professional'},
+  {id:'CLT-003',n:'Bob Johnson',e:'bob@email.com',st:'Active',kyc:'Approved',aum:87450.25,risk:'Low',co:'US',type:'Retail'},
+  {id:'CLT-004',n:'Maria Garcia',e:'maria@corp.ae',st:'Active',kyc:'Pending Review',aum:542100.00,risk:'Medium',co:'UAE',type:'Professional'},
+  {id:'CLT-005',n:'David Kim',e:'david@email.kr',st:'Dormant',kyc:'Approved',aum:15230.80,risk:'Low',co:'KR',type:'Retail'},
+  {id:'CLT-006',n:'Sarah Williams',e:'sarah@hedge.com',st:'Active',kyc:'Approved',aum:5680420.00,risk:'High',co:'US',type:'Institutional'},
+  {id:'CLT-007',n:'James Brown',e:'james@email.uk',st:'Under Review',kyc:'Re-KYC Required',aum:324560.75,risk:'Medium',co:'UK',type:'Retail'},
+  {id:'CLT-008',n:'Fatima Al-Sayed',e:'fatima@dubai.ae',st:'Active',kyc:'Approved',aum:891200.00,risk:'Medium',co:'UAE',type:'Professional'}
+];
+
+const AuditLog=[
+  {id:'AUD-10042',ts:'2025-02-16 14:35:22',u:'Sarah Chen',a:'Client account approved',tgt:'CLT-008',lv:'s',ip:'10.0.1.45'},
+  {id:'AUD-10041',ts:'2025-02-16 14:32:15',u:'System',a:'Order placed — AAPL Buy Limit 50 @ $185.00',tgt:'ORD-4821',lv:'i',ip:'—'},
+  {id:'AUD-10040',ts:'2025-02-16 14:28:41',u:'System',a:'Order placed — GOOGL Buy Stop 100 @ $138.00',tgt:'ORD-4820',lv:'i',ip:'—'},
+  {id:'AUD-10039',ts:'2025-02-16 14:15:08',u:'Sarah Chen',a:'Withdrawal flagged for review',tgt:'WDR-2234',lv:'w',ip:'10.0.1.45'},
+  {id:'AUD-10038',ts:'2025-02-16 13:55:02',u:'System',a:'Order placed — MSFT Sell Limit 25 @ $425.00',tgt:'ORD-4818',lv:'i',ip:'—'},
+  {id:'AUD-10037',ts:'2025-02-16 13:42:18',u:'System',a:'Order filled — NVDA Buy Market 10 @ $874.52',tgt:'ORD-4817',lv:'s',ip:'—'},
+  {id:'AUD-10036',ts:'2025-02-16 13:30:00',u:'Admin Bot',a:'Reconciliation completed — Saxo Bank',tgt:'REC-0892',lv:'s',ip:'—'},
+  {id:'AUD-10035',ts:'2025-02-16 13:22:45',u:'Sarah Chen',a:'Client KYC document uploaded',tgt:'CLT-004',lv:'i',ip:'10.0.1.45'},
+  {id:'AUD-10034',ts:'2025-02-16 12:45:11',u:'System',a:'Failed login attempt (3rd try)',tgt:'USR-unknown',lv:'c',ip:'185.234.12.99'},
+  {id:'AUD-10033',ts:'2025-02-16 12:15:33',u:'System',a:'Order filled — META Buy Limit 75 @ $462.10',tgt:'ORD-4815',lv:'s',ip:'—'},
+  {id:'AUD-10032',ts:'2025-02-16 11:58:20',u:'Ahmed Al-Rashid',a:'Partner API key rotated',tgt:'PTR-001',lv:'w',ip:'82.145.22.10'},
+  {id:'AUD-10031',ts:'2025-02-16 11:30:22',u:'System',a:'Order filled — SPY Sell Market 200',tgt:'ORD-4812',lv:'s',ip:'—'}
+];
+
+const Partners=[
+  {id:'PTR-001',n:'Dubai International Brokerage',r:'UAE/MENA',st:'Active',cl:342,aum:45200000,vol:12800000,api:15420},
+  {id:'PTR-002',n:'Singapore Capital Markets',r:'APAC',st:'Active',cl:189,aum:28700000,vol:8400000,api:9210},
+  {id:'PTR-003',n:'London Securities Ltd',r:'UK/Europe',st:'Onboarding',cl:0,aum:0,vol:0,api:0}
+];
+
+const Reports=[
+  {i:'📊',t:'Daily Trade Blotter',d:'Complete record of all trades executed today.'},
+  {i:'📋',t:'Client Position Snapshot',d:'End-of-day positions for all clients.'},
+  {i:'💰',t:'Cash Movement Report',d:'Deposits, withdrawals, and transfers.'},
+  {i:'🔄',t:'Reconciliation Report',d:'T1 vs Saxo/DriveWealth reconciliation.'},
+  {i:'📈',t:'Commission & Fee Report',d:'Revenue by client, partner, asset class.'},
+  {i:'⚠️',t:'Compliance & SAR Report',d:'Suspicious activity and AML screening.'},
+  {i:'🏢',t:'Partner Activity Summary',d:'Volume, API usage, client growth per partner.'},
+  {i:'📑',t:'Regulatory Filing Pack',d:'Pre-formatted regulatory submissions.'},
+  {i:'🔒',t:'Security Incident Log',d:'Failed logins, blocked IPs, security events.'}
+];
+
+// ================================================================
+// AUTH + NAV
+// ================================================================
+function swRole(r){}
+async function doLogin(){
+  const email=$('#loginEmail').value;
+  const password=$('#loginPw').value;
+  if(!email||!password){$('#loginErr').textContent='Please enter email and password';$('#loginErr').style.display='block';return;}
+  const btn=$('#loginBtn');btn.textContent='Signing in...';btn.disabled=true;
+  $('#loginErr').style.display='none';
+  try{
+    const res=await T1API.login(email,password);
+    if(res.error && !res.offline){
+      btn.textContent='Sign In';btn.disabled=false;
+      $('#loginErr').textContent=res.error;$('#loginErr').style.display='block';
+      return;
+    }
+    if(res.error && res.offline){
+      console.warn('API offline, using mock mode');
+      S.user=Users.client;S.apiMode=false;
+      completeLogin(email);return;
+    }
+    if(res.requiresMFA){
+      btn.textContent='Sign In';btn.disabled=false;
+      S.mfaToken=res.mfaToken;
+      S.mfaMethod=res.mfaMethod||'totp';
+      S.pendingEmail=email;
+      showMFAStep(res.mfaMethod, res.emailSent);
+      return;
+    }
+    // Direct login (no MFA)
+    const apiRole=res.user.role;
+    const roleMap={super_admin:'admin',admin:'admin',compliance:'admin',operations:'admin',partner_admin:'partner',client:'client'};
+    S.role=roleMap[apiRole]||'client';
+    S.user={id:res.user.id,name:res.user.firstName||res.user.name||email.split('@')[0],email:res.user.email,role:apiRole,ini:(res.user.firstName||res.user.name||email.split('@')[0]).substring(0,2).toUpperCase(),kycStatus:res.user.kycStatus,tradingEnabled:res.user.tradingEnabled};
+    S.apiMode=true;
+    completeLogin(email);
+  } catch(e){
+    console.warn('API unreachable, using mock mode');
+    S.user=Users.client;S.apiMode=false;
+    completeLogin(email);
+  }
+}
+function completeLogin(email){
+  const btn=$('#loginBtn');btn.textContent='Sign In';btn.disabled=false;
+  $('#loginStep1').style.display='block';$('#loginStep2').style.display='none';
+  $('#loginPage').style.display='none';$('#appShell').classList.add('show');
+  $('#uavTop').textContent=S.user.ini;$('#unTop').textContent=S.user.name;$('#urTop').textContent=S.user.role;
+  buildNav();nav(S.role==='client'?'trading':'admin-dash');
+  toast(`Welcome back, ${S.user.name.split(' ')[0]}!${S.apiMode?'':' (demo mode)'}`,S.apiMode?'s':'i');
+  // KYC gate notification for live API users
+  if(S.apiMode && S.role==='client' && S.user.tradingEnabled===false){
+    const kycMsg={not_started:'Please complete KYC verification to enable trading.',in_progress:'Your KYC documents are being verified.',pending_review:'KYC submitted — pending admin review.',rejected:'KYC was rejected. Please resubmit documents.',expired:'KYC has expired. Please re-verify.'};
+    const msg=kycMsg[S.user.kycStatus]||'KYC verification required to enable trading.';
+    setTimeout(()=>toast(msg,'w',8000),1500);
+  }
+}
+function showMFAStep(method, emailSent){
+  $('#loginStep1').style.display='none';$('#loginStep2').style.display='block';
+  S.currentMFAMethod=method||'totp';
+  const input=$('#mfaCodeInput');input.value='';input.focus();
+  updateMFAUI(method, emailSent);
+}
+function updateMFAUI(method, emailSent){
+  const inst=$('#mfaInstructions');
+  const resendBtn=$('#mfaResendBtn');
+  const switchEmail=$('#mfaSwitchEmail');
+  const switchTotp=$('#mfaSwitchTotp');
+  const label=$('#mfaCodeLabel');
+  const input=$('#mfaCodeInput');
+  resendBtn.style.display='none';switchEmail.style.display='none';switchTotp.style.display='none';
+  if(method==='email'){
+    inst.textContent=emailSent?`We sent a 6-digit code to ${emailSent}`:'Check your email for a verification code';
+    label.textContent='EMAIL CODE';input.maxLength=6;input.placeholder='000000';
+    resendBtn.style.display='block';switchTotp.style.display='block';
+  } else if(method==='backup'){
+    inst.textContent='Enter one of your backup recovery codes';
+    label.textContent='BACKUP CODE';input.maxLength=10;input.placeholder='XXXX-XXXX';
+    switchTotp.style.display='block';switchEmail.style.display='block';
+  } else {
+    inst.textContent='Enter the 6-digit code from your authenticator app';
+    label.textContent='AUTHENTICATOR CODE';input.maxLength=6;input.placeholder='000000';
+    switchEmail.style.display='block';
+  }
+}
+function switchMFAMethod(method){
+  S.currentMFAMethod=method;
+  if(method==='email'){
+    // Auto-send email code
+    T1API.resendEmailCode(S.mfaToken).then(r=>{
+      updateMFAUI('email', r.maskedEmail||null);
+    }).catch(()=>updateMFAUI('email',null));
+  } else {
+    updateMFAUI(method, null);
+  }
+  $('#mfaCodeInput').value='';$('#mfaCodeInput').focus();$('#mfaErr').style.display='none';
+}
+async function resendEmailCode(){
+  const btn=$('#mfaResendBtn');btn.textContent='Sending...';
+  try{
+    const r=await T1API.resendEmailCode(S.mfaToken);
+    if(r.error){btn.textContent='📧 Resend email code';toast(r.error,'e');}
+    else{btn.textContent='✅ Code sent!';setTimeout(()=>btn.textContent='📧 Resend email code',3000);}
+  }catch(e){btn.textContent='📧 Resend email code';toast('Failed to resend','e');}
+}
+async function doMFAVerify(){
+  const code=$('#mfaCodeInput').value.trim();
+  if(!code){$('#mfaErr').textContent='Please enter a code';$('#mfaErr').style.display='block';return;}
+  const btn=$('#mfaVerifyBtn');btn.textContent='Verifying...';btn.disabled=true;
+  $('#mfaErr').style.display='none';
+  try{
+    const trustDevice=$('#mfaTrustDevice').checked;
+    const res=await T1API.verifyMFA(code,S.mfaToken,{method:S.currentMFAMethod,trustDevice});
+    if(res.error){
+      btn.textContent='Verify';btn.disabled=false;
+      $('#mfaErr').textContent=res.error+(res.attemptsRemaining!=null?` (${res.attemptsRemaining} attempts left)`:'');
+      $('#mfaErr').style.display='block';return;
+    }
+    // MFA verified — complete login
+    const apiRole=res.user.role;
+    const roleMap={super_admin:'admin',admin:'admin',compliance:'admin',operations:'admin',partner_admin:'partner',client:'client'};
+    S.role=roleMap[apiRole]||'client';
+    S.user={id:res.user.id,name:res.user.firstName||res.user.name||S.pendingEmail.split('@')[0],email:res.user.email,role:apiRole,ini:(res.user.firstName||res.user.name||S.pendingEmail.split('@')[0]).substring(0,2).toUpperCase(),kycStatus:res.user.kycStatus,tradingEnabled:res.user.tradingEnabled};
+    S.apiMode=true;
+    btn.textContent='Verify';btn.disabled=false;
+    completeLogin(S.pendingEmail);
+  }catch(e){
+    btn.textContent='Verify';btn.disabled=false;
+    $('#mfaErr').textContent='Verification failed';$('#mfaErr').style.display='block';
+  }
+}
+function backToLogin(){
+  $('#loginStep1').style.display='block';$('#loginStep2').style.display='none';
+  S.mfaToken=null;S.pendingEmail=null;
+}
+function doLogout(){
+  if(!confirm('Sign out?'))return;
+  if(S.apiMode)T1API.logout().catch(()=>{});
+  S.user=null;S.apiMode=false;$('#appShell').classList.remove('show');$('#loginPage').style.display='flex';
+  if(S.live)clearInterval(S.live);
+}
+
+function buildNav(){
+  const sb=$('#sidebar'),tn=$('#topNav');
+  if(S.role==='client'){
+    sb.classList.add('hidden');$('#topBal').classList.remove('hidden');
+    tn.innerHTML=['Trading','Portfolio','Markets','Transfers'].map(i=>`<div class="tnav-i" data-p="${i.toLowerCase()}" onclick="nav('${i.toLowerCase()}')">${i}</div>`).join('');
+  } else {
+    sb.classList.remove('hidden');$('#topBal').classList.add('hidden');tn.innerHTML='';
+    const isP=S.role==='partner';
+    sb.innerHTML=`
+      <div class="slabel">Overview</div>
+      <div class="sitem active" data-p="admin-dash" onclick="nav('admin-dash')"><span class="sicon">📊</span>Dashboard</div>
+      <div class="slabel">${isP?'My Clients':'Client Management'}</div>
+      <div class="sitem" data-p="admin-clients" onclick="nav('admin-clients')"><span class="sicon">👥</span>Clients</div>
+      <div class="sitem" data-p="admin-positions" onclick="nav('admin-positions')"><span class="sicon">📈</span>${isP?'Positions':'All Positions'}</div>
+      ${!isP?'<div class="sitem" data-p="admin-orders" onclick="nav(\'admin-orders\')"><span class="sicon">📝</span>Order Monitor</div>':''}
+      ${!isP?'<div class="slabel">Partners</div><div class="sitem" data-p="admin-partners" onclick="nav(\'admin-partners\')"><span class="sicon">🤝</span>Partner Brokers</div>':''}
+      <div class="slabel">Compliance</div>
+      ${!isP?'<div class="sitem" data-p="admin-audit" onclick="nav(\'admin-audit\')"><span class="sicon">🔍</span>Audit Log</div>':''}
+      <div class="sitem" data-p="admin-reports" onclick="nav('admin-reports')"><span class="sicon">📑</span>Reports</div>
+      ${!isP?`<div class="slabel">Security</div>
+      <div class="sitem" data-p="admin-security" onclick="nav('admin-security')"><span class="sicon">🔒</span>Security Center</div>
+      <div class=\"slabel\">Platform</div>
+      <div class=\"sitem\" onclick=\"window.open('/admin-config.html','_self')\"><span class=\"sicon\">⚙️</span>Configuration</div>\
+      <div class=\"sitem\" onclick=\"window.open('/admin-settings.html','_self')\"><span class=\"sicon\">🎛️</span>Platform Settings</div>\
+      <div class=\"sitem\" onclick=\"window.open('/admin-backups.html','_self')\"><span class=\"sicon\">💾</span>Database Archives</div>`:''}`;
+  }
+}
+
+function nav(p){
+  S.page=p;
+  $$('.tnav-i').forEach(i=>i.classList.toggle('active',i.dataset.p===p));
+  $$('.sitem').forEach(i=>i.classList.toggle('active',i.dataset.p===p));
+  if(S.live){clearInterval(S.live);S.live=null;}
+  const c=$('#pagec');
+  switch(p){
+    case'trading':pgTrading(c);break;case'portfolio':pgPortfolio(c);break;
+    case'markets':pgMarkets(c);break;case'transfers':pgTransfers(c);break;
+    case'admin-dash':pgAdminDash(c);break;case'admin-clients':pgClients(c);break;
+    case'admin-positions':pgAdminPos(c);break;case'admin-orders':pgAdminOrd(c);break;
+    case'admin-partners':pgPartners(c);break;case'admin-audit':pgAudit(c);break;
+    case'admin-reports':pgReports(c);break;case'admin-security':pgSecurity(c);break;
+    default:c.innerHTML=`<div class="apage anim"><div class="atitle">${p}</div><div class="asub">Under construction</div></div>`;
+  }
+}
+
+function toast(m,t='i'){const c=$('#toastC'),e=document.createElement('div');e.className=`toast ${t}`;
+e.innerHTML=`${t==='s'?'✅':t==='e'?'❌':'ℹ️'} ${m}`;c.appendChild(e);
+setTimeout(()=>{e.style.opacity='0';e.style.transform='translateY(10px)';setTimeout(()=>e.remove(),300)},3000);}
+
+function showModal(t,b,f=''){$('#modalC').innerHTML=`<div class="movl" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()"><div class="mhdr"><div class="mtit">${t}</div><div class="mcls" onclick="closeModal()">✕</div></div><div class="mbod">${b}</div>${f?`<div class="mftr">${f}</div>`:''}</div></div>`;}
+function closeModal(e){if(e&&e.target!==e.currentTarget)return;$('#modalC').innerHTML='';}
+
+// ================================================================
+// TRADING PAGE
+// ================================================================
+function pgTrading(c){
+  c.innerHTML=`<div class="tlay">
+  <div class="wlpanel">
+    <div class="card-h" style="padding:10px 14px"><div class="card-t"><span class="ldot"></span> Watchlist</div><div style="font-size:16px;cursor:pointer;color:var(--t3)" onclick="toast('Add symbol','i')">+</div></div>
+    <div class="sbox"><span style="color:var(--t4);font-size:12px">🔍</span><input placeholder="Search symbol..." oninput="filtWL(this.value)"></div>
+    <div class="wltabs"><div class="wltab active" onclick="filtWLT(this,'all')">All</div><div class="wltab" onclick="filtWLT(this,'stk')">Stocks</div><div class="wltab" onclick="filtWLT(this,'cry')">Crypto</div><div class="wltab" onclick="filtWLT(this,'fx')">FX</div><div class="wltab" onclick="filtWLT(this,'etf')">ETFs</div></div>
+    <div class="wlitems" id="wlItems"></div>
+  </div>
+  <div class="cpanel">
+    <div class="instbar">
+      <div style="display:flex;align-items:center;gap:16px">
+        <div><div style="display:flex;align-items:center;gap:8px"><span class="isym" id="iSym">AAPL</span><span class="iex" id="iEx">NASDAQ</span></div><div style="font-size:11px;color:var(--t4);margin-top:1px" id="iNam">Apple Inc.</div></div>
+        <div style="display:flex;align-items:center;gap:12px"><span class="iprice" id="iPr">189.84</span><span class="ichg green" id="iChg">+1.25%</span></div>
+      </div>
+      <div class="ctrls"><button class="tfb" onclick="selTF(this)">1m</button><button class="tfb" onclick="selTF(this)">5m</button><button class="tfb active" onclick="selTF(this)">15m</button><button class="tfb" onclick="selTF(this)">1H</button><button class="tfb" onclick="selTF(this)">4H</button><button class="tfb" onclick="selTF(this)">1D</button></div>
+    </div>
+    <div class="carea"><canvas id="mChart"></canvas><div class="covl"><div class="ohlc">O <span>189.12</span></div><div class="ohlc">H <span>191.34</span></div><div class="ohlc">L <span>188.56</span></div><div class="ohlc">C <span>189.84</span></div><div class="ohlc">Vol <span>42.3M</span></div></div></div>
+    <div class="bsec">
+      <div class="tabs" id="bTabs"><div class="tab active" onclick="swBTab(this,'pos')">Positions <span class="tab-c">${Pos.length}</span></div><div class="tab" onclick="swBTab(this,'oo')">Open Orders <span class="tab-c">${OO.length}</span></div><div class="tab" onclick="swBTab(this,'oh')">History <span class="tab-c">${OH.length}</span></div></div>
+      <div class="bcont" id="bCont"></div>
+    </div>
+  </div>
+  <div class="opanel">
+    <div class="card-h" style="padding:10px 14px"><div class="card-t">Order Ticket</div><div class="mono" style="font-size:11px;color:var(--t3)" id="oSL">AAPL</div></div>
+    <div class="stog"><button class="sbtn ba" id="buyB" onclick="setSide('buy')">Buy</button><button class="sbtn" id="sellB" onclick="setSide('sell')">Sell</button></div>
+    <div class="oform">
+      <div class="fg"><label class="flabel">Order Type</label><select class="sel" id="oType" onchange="onOT()"><option>Market</option><option>Limit</option><option>Stop</option><option>Stop Limit</option><option>Trailing Stop</option></select></div>
+      <div class="fg"><label class="flabel">Quantity</label><div class="qr"><button class="qb" onclick="adjQ(-1)">−</button><input type="number" class="input" id="qI" value="100" style="text-align:center;font-family:var(--mono)" oninput="updOS()"><button class="qb" onclick="adjQ(1)">+</button></div><div class="qsc"><div class="qsi" onclick="setQ(25)">25</div><div class="qsi" onclick="setQ(50)">50</div><div class="qsi" onclick="setQ(100)">100</div><div class="qsi" onclick="setQ(500)">500</div></div></div>
+      <div class="fg hidden" id="lpGrp"><label class="flabel">Limit Price</label><input class="input" id="lpI" value="189.50" style="font-family:var(--mono)"></div>
+      <div class="fg"><label class="flabel">Time in Force</label><select class="sel"><option>Day</option><option>GTC</option><option>IOC</option><option>FOK</option></select></div>
+      <div class="osum"><div class="osr"><span class="osl">Est. Price</span><span class="osv" id="osP">$189.84</span></div><div class="osr"><span class="osl">Quantity</span><span class="osv" id="osQ">100</span></div><div class="osr"><span class="osl">Commission</span><span class="osv">$1.00</span></div><div class="osd"></div><div class="osr ost"><span class="osl">Est. Total</span><span class="osv" id="osT">$18,985.00</span></div></div>
+      <button class="subo buy" id="subO" onclick="subOrd()">Buy 100 AAPL @ Market</button>
+    </div>
+    <div class="domsec"><div class="domtit">Order Book</div><div id="obDOM"></div></div>
+    <div class="asec"><div class="domtit">Account</div><div class="agrid"><div class="aitm"><div class="albl">Buying Power</div><div class="aval green">$124,266</div></div><div class="aitm"><div class="albl">Margin Used</div><div class="aval yellow">$62,140</div></div><div class="aitm"><div class="albl">Day P&L</div><div class="aval green">+$1,847</div></div><div class="aitm"><div class="albl">Open P&L</div><div class="aval green">+$12,450</div></div></div></div>
+  </div></div>`;
+  rWL();rBTab('pos');rOB();drawChart();startLive();window.onresize=drawChart;
+}
+
+function rWL(f='all',q=''){
+  const items=WL.filter(w=>{
+    if(q&&!w.s.toLowerCase().includes(q.toLowerCase())&&!w.n.toLowerCase().includes(q.toLowerCase()))return false;
+    if(f==='stk')return!['CRYPTO','FX'].includes(w.x)&&!w.s.includes('/')&&!['SPY','QQQ'].includes(w.s);
+    if(f==='cry')return w.x==='CRYPTO';if(f==='fx')return w.x==='FX';
+    if(f==='etf')return['SPY','QQQ'].includes(w.s);return true;
+  });
+  const el=$('#wlItems');if(!el)return;
+  el.innerHTML=items.map(w=>{const i=WL.indexOf(w);return`<div class="wli ${i===S.sym?'active':''}" onclick="selSym(${i})"><div><div class="wls">${w.s}</div><div class="wln">${w.n}</div></div><div class="wlp" id="wp${i}">${fmt(w.p)}</div><div class="wlch ${w.c>=0?'up':'dn'}">${w.c>=0?'+':''}${w.c.toFixed(2)}%</div></div>`;}).join('');
+}
+function filtWL(v){rWL('all',v);}
+function filtWLT(el,t){$$('.wltab').forEach(e=>e.classList.remove('active'));el.classList.add('active');rWL(t);}
+function selSym(i){S.sym=i;const w=WL[i];if($('#iSym'))$('#iSym').textContent=w.s;if($('#iEx'))$('#iEx').textContent=w.x;if($('#iNam'))$('#iNam').textContent=w.n;if($('#iPr'))$('#iPr').textContent=fmt(w.p);if($('#iChg')){$('#iChg').textContent=`${w.c>=0?'+':''}${w.c.toFixed(2)}%`;$('#iChg').className=`ichg ${w.c>=0?'green':'red'}`;}if($('#oSL'))$('#oSL').textContent=w.s;rWL();updOS();drawChart();}
+function selTF(el){$$('.tfb').forEach(b=>b.classList.remove('active'));el.classList.add('active');drawChart();}
+
+function swBTab(el,t){$$('#bTabs .tab').forEach(e=>e.classList.remove('active'));el.classList.add('active');rBTab(t);}
+function rBTab(t){
+  const c=$('#bCont');if(!c)return;
+  if(t==='pos'){c.innerHTML=`<table class="dtable"><thead><tr><th>Symbol</th><th>Side</th><th>Qty</th><th>Avg Price</th><th>Last</th><th class="r">Mkt Value</th><th class="r">P&L</th><th class="r">%</th></tr></thead><tbody>${Pos.map(p=>{const pnl=p.side==='Long'?(p.last-p.avg)*p.q:(p.avg-p.last)*p.q;const pct=pnl/(p.avg*p.q)*100;return`<tr><td style="font-weight:600;color:var(--t0)">${p.s}</td><td class="${p.side==='Long'?'green':'red'}" style="font-weight:600">${p.side}</td><td>${p.q}</td><td>${fmt(p.avg)}</td><td>${fmt(p.last)}</td><td class="r">${fmtM(p.q*p.last)}</td><td class="r ${pnl>=0?'green':'red'}">${pnl>=0?'+':''}${fmtM(pnl)}</td><td class="r ${pct>=0?'green':'red'}">${pct>=0?'+':''}${pct.toFixed(2)}%</td></tr>`;}).join('')}</tbody></table>`;}
+  else if(t==='oo'){c.innerHTML=`<table class="dtable"><thead><tr><th>ID</th><th>Symbol</th><th>Side</th><th>Type</th><th>Qty</th><th>Price</th><th>Status</th><th>Time</th><th></th></tr></thead><tbody>${OO.map(o=>`<tr><td style="color:var(--t2)">${o.id}</td><td style="font-weight:600;color:var(--t0)">${o.s}</td><td class="${o.side==='Buy'?'green':'red'}" style="font-weight:600">${o.side}</td><td style="color:var(--t2)">${o.type}</td><td>${o.q}</td><td>${fmt(o.p)}</td><td><span class="badge badge-yellow">${o.st}</span></td><td style="color:var(--t3)">${o.t}</td><td><button class="btn btn-sm btn-ghost" onclick="cancelO('${o.id}')">Cancel</button></td></tr>`).join('')}</tbody></table>`;}
+  else{c.innerHTML=`<table class="dtable"><thead><tr><th>ID</th><th>Symbol</th><th>Side</th><th>Type</th><th>Qty</th><th>Fill Price</th><th>Status</th><th>Time</th></tr></thead><tbody>${OH.map(o=>`<tr><td style="color:var(--t2)">${o.id}</td><td style="font-weight:600;color:var(--t0)">${o.s}</td><td class="${o.side==='Buy'?'green':'red'}" style="font-weight:600">${o.side}</td><td style="color:var(--t2)">${o.type}</td><td>${o.q}</td><td>${fmt(o.fp)}</td><td><span class="badge badge-green">${o.st}</span></td><td style="color:var(--t3)">${o.t}</td></tr>`).join('')}</tbody></table>`;}
+}
+
+function setSide(s){S.side=s;$('#buyB').className=s==='buy'?'sbtn ba':'sbtn';$('#sellB').className=s==='sell'?'sbtn sa':'sbtn';$('#subO').className=`subo ${s}`;updOS();}
+function adjQ(d){const i=$('#qI');i.value=Math.max(1,(parseInt(i.value)||0)+d);updOS();}
+function setQ(q){$('#qI').value=q;updOS();}
+function onOT(){const v=$('#oType').value;$('#lpGrp').classList.toggle('hidden',!['Limit','Stop Limit'].includes(v));updOS();}
+function updOS(){const w=WL[S.sym],q=parseInt($('#qI')?.value)||0,t=$('#oType')?.value||'Market',sd=S.side==='buy'?'Buy':'Sell';if($('#osP'))$('#osP').textContent='$'+fmt(w.p);if($('#osQ'))$('#osQ').textContent=q;if($('#osT'))$('#osT').textContent=fmtM(q*w.p+1);if($('#subO'))$('#subO').textContent=`${sd} ${q} ${w.s} @ ${t}`;}
+function subOrd(){const b=$('#subO'),o=b.textContent;b.textContent='✓ Order Submitted';b.style.opacity='.7';toast('Order submitted','s');setTimeout(()=>{b.textContent=o;b.style.opacity='1';},2000);}
+function cancelO(id){toast(`Order ${id} cancelled`,'i');const i=OO.findIndex(o=>o.id===id);if(i>=0)OO.splice(i,1);rBTab('oo');}
+
+function rOB(){const el=$('#obDOM');if(!el)return;const w=WL[S.sym],mid=w.p;const bids=Array.from({length:5},(_,i)=>({p:mid-.02*(i+1),z:800+Math.random()*5000}));const asks=Array.from({length:5},(_,i)=>({p:mid+.02*(i+1),z:600+Math.random()*4500}));const mx=Math.max(...bids.map(b=>b.z),...asks.map(a=>a.z));let h='';for(let i=asks.length-1;i>=0;i--){const pct=(asks[i].z/mx*100).toFixed(0);h+=`<div class="domr"><div class="dbb"></div><div class="domp">${asks[i].p.toFixed(2)}</div><div class="dab"><div class="bf" style="width:${pct}%"></div><span class="bt">${(asks[i].z/1e3).toFixed(1)}K</span></div></div>`;}h+=`<div class="sprd">Spread: $${(asks[0].p-bids[0].p).toFixed(4)}</div>`;for(let i=0;i<bids.length;i++){const pct=(bids[i].z/mx*100).toFixed(0);h+=`<div class="domr"><div class="dbb"><div class="bf" style="width:${pct}%"></div><span class="bt">${(bids[i].z/1e3).toFixed(1)}K</span></div><div class="domp">${bids[i].p.toFixed(2)}</div><div class="dab"></div></div>`;}el.innerHTML=h;}
+
+function drawChart(){const cv=document.getElementById('mChart');if(!cv)return;const ctx=cv.getContext('2d');const r=cv.parentElement.getBoundingClientRect();cv.width=r.width*2;cv.height=r.height*2;cv.style.width=r.width+'px';cv.style.height=r.height+'px';ctx.scale(2,2);const w=r.width,h=r.height;const cds=[];let pr=WL[S.sym].p*.97;for(let i=0;i<80;i++){const o=pr+(Math.random()-.48)*2,cl=o+(Math.random()-.47)*3;cds.push({o,c:cl,h:Math.max(o,cl)+Math.random()*1.5,l:Math.min(o,cl)-Math.random()*1.5,v:2e4+Math.random()*6e4});pr=cl;}const ap=cds.flatMap(c=>[c.h,c.l]);const mn=Math.min(...ap)-1,mx=Math.max(...ap)+1;const ct=35,cb=h-45,ch=cb-ct;const toY=p=>ct+(1-(p-mn)/(mx-mn))*ch;const mxv=Math.max(...cds.map(c=>c.v));ctx.strokeStyle='rgba(28,42,66,.35)';ctx.lineWidth=.5;for(let i=0;i<=5;i++){const p=mn+(mx-mn)/5*i,y=toY(p);ctx.beginPath();ctx.moveTo(35,y);ctx.lineTo(w-55,y);ctx.stroke();ctx.fillStyle='#475569';ctx.font='9px JetBrains Mono';ctx.textAlign='right';ctx.fillText(p.toFixed(2),w-8,y+3);}const cW=(w-100)/cds.length,bW=Math.max(cW*.7,3);cds.forEach((c,i)=>{const x=45+i*cW+cW/2,up=c.c>=c.o;ctx.fillStyle=up?'rgba(16,185,129,.12)':'rgba(239,68,68,.12)';const vH=c.v/mxv*(h-cb-5);ctx.fillRect(x-bW/2,h-5-vH,bW,vH);ctx.strokeStyle=up?'#10b981':'#ef4444';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,toY(c.h));ctx.lineTo(x,toY(c.l));ctx.stroke();ctx.fillStyle=up?'#10b981':'#ef4444';const oY=toY(c.o),cY=toY(c.c);ctx.fillRect(x-bW/2,Math.min(oY,cY),bW,Math.abs(oY-cY)||1);});ctx.beginPath();ctx.strokeStyle='rgba(139,92,246,.5)';ctx.lineWidth=1.5;for(let i=19;i<cds.length;i++){let s=0;for(let j=i-19;j<=i;j++)s+=cds[j].c;const ma=s/20,x=45+i*cW+cW/2;i===19?ctx.moveTo(x,toY(ma)):ctx.lineTo(x,toY(ma));}ctx.stroke();const lc=cds[cds.length-1].c,ly=toY(lc);ctx.strokeStyle='#3b82f6';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(35,ly);ctx.lineTo(w-55,ly);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#3b82f6';ctx.beginPath();ctx.roundRect(w-55,ly-9,50,18,3);ctx.fill();ctx.fillStyle='#fff';ctx.font='600 9px JetBrains Mono';ctx.textAlign='center';ctx.fillText(lc.toFixed(2),w-30,ly+3);}
+
+function startLive(){S.live=setInterval(()=>{const i=Math.floor(Math.random()*WL.length);const w=WL[i],d=(Math.random()-.48)*w.p*.001;w.p=Math.max(.01,w.p+d);const el=document.getElementById(`wp${i}`);if(el){el.textContent=fmt(w.p);el.classList.remove('flash-up','flash-dn');void el.offsetWidth;el.classList.add(d>=0?'flash-up':'flash-dn');}Pos.forEach(p=>{const m=WL.find(w=>w.s===p.s);if(m)p.last=m.p;});},700);}
+
+// ================================================================
+// PORTFOLIO PAGE
+// ================================================================
+function pgPortfolio(c){
+  const tv=Pos.reduce((s,p)=>s+p.q*p.last,0);
+  const tp=Pos.reduce((s,p)=>s+(p.side==='Long'?(p.last-p.avg)*p.q:(p.avg-p.last)*p.q),0);
+  const pp=tp/(tv-tp)*100;
+  c.innerHTML=`<div class="ppage anim">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px">
+      <div><div style="font-size:13px;color:var(--t3);margin-bottom:4px">Total Portfolio Value</div><div class="pval">${fmtM(tv)}</div><div class="pchg ${tp>=0?'green':'red'}">${tp>=0?'+':''}${fmtM(tp)} (${pp>=0?'+':''}${pp.toFixed(2)}%) today</div></div>
+      <div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" onclick="dlReport()">Export CSV</button><button class="btn btn-primary btn-sm" onclick="nav('transfers')">Deposit</button></div>
+    </div>
+    <div class="scards">
+      <div class="scard"><div class="slbl">Cash Balance</div><div class="sval green">$62,480.50</div><div class="ssub">Available for trading</div></div>
+      <div class="scard"><div class="slbl">Buying Power</div><div class="sval">$124,266.00</div><div class="ssub">2x margin</div></div>
+      <div class="scard"><div class="slbl">Day P&L</div><div class="sval green">+$1,847.32</div><div class="ssub">+0.74% from open</div></div>
+      <div class="scard"><div class="slbl">Total Return</div><div class="sval green">+$18,246.80</div><div class="ssub">+7.93% all time</div></div>
+    </div>
+    <div class="card" style="margin-bottom:24px"><div class="card-h"><div class="card-t">Portfolio Chart</div></div><canvas id="pChart" style="width:100%;height:180px"></canvas></div>
+    <div class="card" style="margin-bottom:24px"><div class="card-h"><div class="card-t">Holdings</div></div>
+    <table class="dtable"><thead><tr><th>Asset</th><th>Side</th><th>Qty</th><th class="r">Avg Cost</th><th class="r">Current</th><th class="r">Mkt Value</th><th class="r">P&L</th><th class="r">%</th><th class="r">Weight</th></tr></thead>
+    <tbody>${Pos.map(p=>{const mv=p.q*p.last;const pnl=p.side==='Long'?(p.last-p.avg)*p.q:(p.avg-p.last)*p.q;const pct=pnl/(p.avg*p.q)*100;const wt=mv/tv*100;return`<tr><td style="font-weight:600;color:var(--t0)">${p.s}</td><td class="${p.side==='Long'?'green':'red'}" style="font-weight:600">${p.side}</td><td>${p.q}</td><td class="r">${fmt(p.avg)}</td><td class="r">${fmt(p.last)}</td><td class="r">${fmtM(mv)}</td><td class="r ${pnl>=0?'green':'red'}">${pnl>=0?'+':''}${fmtM(pnl)}</td><td class="r ${pct>=0?'green':'red'}">${pct>=0?'+':''}${pct.toFixed(2)}%</td><td class="r" style="color:var(--t2)">${wt.toFixed(1)}%</td></tr>`;}).join('')}</tbody></table></div>
+  </div>`;
+  drawPortChart();
+}
+function drawPortChart(){const cv=document.getElementById('pChart');if(!cv)return;const ctx=cv.getContext('2d');const r=cv.parentElement.getBoundingClientRect();cv.width=r.width*2;cv.height=360;cv.style.width=r.width+'px';cv.style.height='180px';ctx.scale(2,2);const w=r.width,h=180;const pts=[];let v=230000;for(let i=0;i<60;i++){v+=(Math.random()-.42)*2000;pts.push(v);}const mn=Math.min(...pts)*.998,mx=Math.max(...pts)*1.002;const toY=v=>20+(1-(v-mn)/(mx-mn))*(h-40);const toX=i=>40+i/(pts.length-1)*(w-80);const gr=ctx.createLinearGradient(0,20,0,h-20);gr.addColorStop(0,'rgba(16,185,129,.15)');gr.addColorStop(1,'rgba(16,185,129,0)');ctx.beginPath();ctx.moveTo(toX(0),h-20);pts.forEach((p,i)=>ctx.lineTo(toX(i),toY(p)));ctx.lineTo(toX(pts.length-1),h-20);ctx.fillStyle=gr;ctx.fill();ctx.beginPath();ctx.strokeStyle='#10b981';ctx.lineWidth=2;pts.forEach((p,i)=>i===0?ctx.moveTo(toX(i),toY(p)):ctx.lineTo(toX(i),toY(p)));ctx.stroke();const lx=toX(pts.length-1),ly=toY(pts[pts.length-1]);ctx.beginPath();ctx.arc(lx,ly,4,0,Math.PI*2);ctx.fillStyle='#10b981';ctx.fill();}
+
+// ================================================================
+// MARKETS + TRANSFERS
+// ================================================================
+function pgMarkets(c){c.innerHTML=`<div class="apage anim"><div class="atitle">Markets Overview</div><div class="asub" style="margin-bottom:24px">Global indices and data</div><div class="scards"><div class="scard"><div class="slbl">S&P 500</div><div class="sval green mono">5,024 <span style="font-size:13px">+0.67%</span></div></div><div class="scard"><div class="slbl">NASDAQ</div><div class="sval green mono">17,842 <span style="font-size:13px">+1.12%</span></div></div><div class="scard"><div class="slbl">BTC/USD</div><div class="sval green mono">97,842 <span style="font-size:13px">+1.87%</span></div></div><div class="scard"><div class="slbl">EUR/USD</div><div class="sval red mono">1.0842 <span style="font-size:13px">-0.12%</span></div></div></div><div class="card"><div class="card-h"><div class="card-t">Top Movers</div></div><table class="dtable"><thead><tr><th>Symbol</th><th>Name</th><th class="r">Price</th><th class="r">Change</th><th class="r">Volume</th></tr></thead><tbody>${[...WL].sort((a,b)=>b.c-a.c).slice(0,8).map(w=>`<tr><td style="font-weight:600;color:var(--t0)">${w.s}</td><td style="color:var(--t2)">${w.n}</td><td class="r">${fmt(w.p)}</td><td class="r ${w.c>=0?'green':'red'}">${w.c>=0?'+':''}${w.c.toFixed(2)}%</td><td class="r" style="color:var(--t2)">${(Math.random()*80+5).toFixed(1)}M</td></tr>`).join('')}</tbody></table></div></div>`;}
+
+function pgTransfers(c){c.innerHTML=`<div class="apage anim"><div class="atitle">Fund Transfers</div><div class="asub" style="margin-bottom:24px">Deposit and withdraw funds securely</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px"><div class="card" style="padding:24px"><div class="card-t" style="margin-bottom:16px">Deposit Funds</div><div class="fg"><label class="flabel">Amount (USD)</label><input class="input mono" placeholder="0.00" style="font-size:20px;padding:14px"></div><div class="fg"><label class="flabel">From</label><select class="sel"><option>Bank ••••4521 (Chase)</option><option>Wire Transfer</option></select></div><button class="btn btn-green" style="width:100%" onclick="toast('Deposit submitted','s')">Deposit Funds</button></div><div class="card" style="padding:24px"><div class="card-t" style="margin-bottom:16px">Withdraw Funds</div><div class="fg"><label class="flabel">Amount (USD)</label><input class="input mono" placeholder="0.00" style="font-size:20px;padding:14px"></div><div class="fg"><label class="flabel">To</label><select class="sel"><option>Bank ••••4521 (Chase)</option></select></div><button class="btn btn-ghost" style="width:100%" onclick="toast('Withdrawal pending approval','i')">Request Withdrawal</button><div style="margin-top:10px;font-size:11px;color:var(--t4)">⏱ Requires dual authorization (24-48h)</div></div></div><div class="card"><div class="card-h"><div class="card-t">Recent Transfers</div></div><table class="dtable"><thead><tr><th>Date</th><th>Type</th><th>Account</th><th class="r">Amount</th><th>Status</th></tr></thead><tbody><tr><td>2025-02-14</td><td class="green" style="font-weight:600">Deposit</td><td style="color:var(--t2)">••••4521</td><td class="r green">+$25,000.00</td><td><span class="badge badge-green">Completed</span></td></tr><tr><td>2025-02-10</td><td class="red" style="font-weight:600">Withdrawal</td><td style="color:var(--t2)">••••4521</td><td class="r red">-$5,000.00</td><td><span class="badge badge-green">Completed</span></td></tr><tr><td>2025-01-28</td><td class="green" style="font-weight:600">Deposit</td><td style="color:var(--t2)">Wire</td><td class="r green">+$100,000.00</td><td><span class="badge badge-green">Completed</span></td></tr></tbody></table></div></div>`;}
+
+// ================================================================
+// ADMIN DASHBOARD
+// ================================================================
+function pgAdminDash(c){
+  const isP=S.role==='partner';
+  c.innerHTML=`<div class="apage anim">
+    <div style="margin-bottom:24px"><div class="atitle">${isP?'Partner Dashboard':'Admin Dashboard'}</div><div class="asub">${isP?'Dubai International Brokerage':'Platform overview'} · ${new Date().toLocaleString()}</div></div>
+    <div class="astats">
+      <div class="astatc ba"><div class="asi">👥</div><div class="asv">${isP?'342':'1,247'}</div><div class="asl">Total Clients</div><div class="asch green">↑ +${isP?'12':'38'} this month</div></div>
+      <div class="astatc ga"><div class="asi">💰</div><div class="asv">${isP?'$45.2M':'$284.6M'}</div><div class="asl">Total AUM</div><div class="asch green">↑ +3.2%</div></div>
+      <div class="astatc pa"><div class="asi">📈</div><div class="asv">${isP?'$12.8M':'$42.1M'}</div><div class="asl">30-Day Volume</div><div class="asch green">↑ +8.7%</div></div>
+      <div class="astatc ya"><div class="asi">${isP?'🔑':'⚡'}</div><div class="asv">${isP?'15,420':'99.97%'}</div><div class="asl">${isP?'API Calls (24h)':'Uptime'}</div><div class="asch green">${isP?'↑ +12%':'SLA: 99.95%'}</div></div>
+    </div>
+    <div class="agrd">
+      <div class="card"><div class="card-h"><div class="card-t">Recent Activity</div></div><div style="padding:16px"><div class="afeed">${AuditLog.slice(0,6).map(a=>`<div class="afi"><div class="afic" style="background:${a.lv==='s'?'var(--greend)':a.lv==='w'?'var(--yellowd)':a.lv==='c'?'var(--redd)':'var(--blued)'}">${a.lv==='s'?'✅':a.lv==='w'?'⚠️':a.lv==='c'?'🚨':'ℹ️'}</div><div><div class="aft"><strong>${a.u}</strong> — ${a.a}</div><div class="aftm">${a.ts}</div></div></div>`).join('')}</div></div></div>
+      <div class="card"><div class="card-h"><div class="card-t">${isP?'Sub-Broker Status':'Sub-Broker Connections'}</div></div><div style="padding:16px">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:var(--bg3);border-radius:var(--r);padding:14px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:600;font-size:14px">Saxo Bank</div><div style="font-size:11px;color:var(--t3)">OpenAPI v2.1 · Multi-asset</div></div><div><span class="badge badge-green"><span class="ldot" style="margin-right:4px"></span> Connected</span></div></div>
+          <div style="background:var(--bg3);border-radius:var(--r);padding:14px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:600;font-size:14px">DriveWealth</div><div style="font-size:11px;color:var(--t3)">REST API v3 · US Equities</div></div><div><span class="badge badge-green"><span class="ldot" style="margin-right:4px"></span> Connected</span></div></div>
+          <div style="background:var(--bg3);border-radius:var(--r);padding:14px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:600;font-size:14px">Reconciliation</div><div style="font-size:11px;color:var(--t3)">Last run: today 13:30 UTC</div></div><div><span class="badge badge-green">✓ Matched</span></div></div>
+        </div>
+      </div></div>
+    </div>
+    ${!isP?`<div class="card"><div class="card-h"><div class="card-t">Client Summary</div><button class="btn btn-sm btn-ghost" onclick="nav('admin-clients')">View All →</button></div><table class="dtable"><thead><tr><th>Client</th><th>Type</th><th>Status</th><th>KYC</th><th class="r">AUM</th><th>Risk</th></tr></thead><tbody>${Clients.slice(0,5).map(cl=>`<tr><td style="font-weight:600;color:var(--t0)">${cl.n}</td><td style="color:var(--t2)">${cl.type}</td><td><span class="badge badge-${cl.st==='Active'?'green':cl.st==='Dormant'?'yellow':'purple'}">${cl.st}</span></td><td><span class="badge badge-${cl.kyc==='Approved'?'green':cl.kyc.includes('Pending')?'yellow':'red'}">${cl.kyc}</span></td><td class="r">${fmtC(cl.aum)}</td><td><span class="badge badge-${cl.risk==='Low'?'green':cl.risk==='Medium'?'yellow':'red'}">${cl.risk}</span></td></tr>`).join('')}</tbody></table></div>`:''}
+  </div>`;
+}
+
+// ================================================================
+// ADMIN CLIENTS
+// ================================================================
+function pgClients(c){
+  c.innerHTML=`<div class="apage anim">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+      <div><div class="atitle">Client Management</div><div class="asub">${Clients.length} clients registered</div></div>
+      <div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" onclick="dlReport()">Export</button><button class="btn btn-primary btn-sm" onclick="showModal('Add New Client','<div class=fg><label class=flabel>Full Name</label><input class=input placeholder=\\'John Doe\\'></div><div class=fg><label class=flabel>Email</label><input class=input placeholder=\\'john@email.com\\'></div><div class=fg><label class=flabel>Client Type</label><select class=sel><option>Retail</option><option>Professional</option><option>Institutional</option></select></div><div class=fg><label class=flabel>Country</label><input class=input placeholder=\\'US\\'></div>','<button class=\\'btn btn-ghost\\' onclick=closeModal()>Cancel</button><button class=\\'btn btn-primary\\' onclick=\\'toast(\"Client created\",\"s\");closeModal()\\'>Create Client</button>')">+ Add Client</button></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:16px" id="cFilters">
+      <div class="fchip active" onclick="filtClients(this,'all')">All (${Clients.length})</div>
+      <div class="fchip" onclick="filtClients(this,'Active')">Active (${Clients.filter(c=>c.st==='Active').length})</div>
+      <div class="fchip" onclick="filtClients(this,'Dormant')">Dormant</div>
+      <div class="fchip" onclick="filtClients(this,'review')">Needs Review</div>
+    </div>
+    <div class="card"><table class="dtable"><thead><tr><th>ID</th><th>Client</th><th>Email</th><th>Type</th><th>Status</th><th>KYC</th><th class="r">AUM</th><th>Risk</th><th>Country</th><th></th></tr></thead>
+    <tbody id="cBody">${renderClientRows(Clients)}</tbody></table></div>
+  </div>`;
+}
+function renderClientRows(cls){return cls.map(cl=>`<tr><td style="color:var(--t2)">${cl.id}</td><td style="font-weight:600;color:var(--t0)">${cl.n}</td><td style="color:var(--t2)">${cl.e}</td><td style="color:var(--t2)">${cl.type}</td><td><span class="badge badge-${cl.st==='Active'?'green':cl.st==='Dormant'?'yellow':'purple'}">${cl.st}</span></td><td><span class="badge badge-${cl.kyc==='Approved'?'green':cl.kyc.includes('Pending')?'yellow':'red'}">${cl.kyc}</span></td><td class="r">${fmtC(cl.aum)}</td><td><span class="badge badge-${cl.risk==='Low'?'green':cl.risk==='Medium'?'yellow':'red'}">${cl.risk}</span></td><td style="color:var(--t2)">${cl.co}</td><td><button class="btn btn-sm btn-ghost" onclick="viewClient('${cl.id}')">View</button></td></tr>`).join('');}
+function filtClients(el,f){$$('#cFilters .fchip').forEach(e=>e.classList.remove('active'));el.classList.add('active');const b=$('#cBody');const cls=f==='all'?Clients:f==='review'?Clients.filter(c=>c.st!=='Active'||c.kyc!=='Approved'):Clients.filter(c=>c.st===f);b.innerHTML=renderClientRows(cls);}
+function viewClient(id){const cl=Clients.find(c=>c.id===id);if(!cl)return;showModal(`Client: ${cl.n}`,`<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px"><div><div class="flabel">Client ID</div><div class="mono" style="margin-bottom:12px">${cl.id}</div><div class="flabel">Email</div><div style="margin-bottom:12px">${cl.e}</div><div class="flabel">Type</div><div style="margin-bottom:12px">${cl.type}</div><div class="flabel">Country</div><div style="margin-bottom:12px">${cl.co}</div></div><div><div class="flabel">Status</div><div style="margin-bottom:12px"><span class="badge badge-${cl.st==='Active'?'green':'yellow'}">${cl.st}</span></div><div class="flabel">KYC</div><div style="margin-bottom:12px"><span class="badge badge-${cl.kyc==='Approved'?'green':'yellow'}">${cl.kyc}</span></div><div class="flabel">Risk Level</div><div style="margin-bottom:12px"><span class="badge badge-${cl.risk==='Low'?'green':cl.risk==='Medium'?'yellow':'red'}">${cl.risk}</span></div><div class="flabel">AUM</div><div class="mono" style="font-size:18px;font-weight:700">${fmtM(cl.aum)}</div></div></div>`,`<button class="btn btn-ghost" onclick="closeModal()">Close</button><button class="btn btn-primary" onclick="toast('Client updated','s');closeModal()">Save Changes</button>`);}
+
+// ================================================================
+// ADMIN POSITIONS, ORDERS, PARTNERS, AUDIT, REPORTS, SECURITY
+// ================================================================
+function pgAdminPos(c){
+  c.innerHTML=`<div class="apage anim"><div style="margin-bottom:24px"><div class="atitle">All Client Positions</div><div class="asub">Real-time aggregated view across Saxo Bank & DriveWealth</div></div>
+  <div class="scards"><div class="scard"><div class="slbl">Total Positions</div><div class="sval">${Pos.length * 8}</div></div><div class="scard"><div class="slbl">Long / Short</div><div class="sval"><span class="green">72%</span> / <span class="red">28%</span></div></div><div class="scard"><div class="slbl">Aggregate P&L</div><div class="sval green">+$842,150</div></div><div class="scard"><div class="slbl">Margin Utilization</div><div class="sval yellow">34.2%</div></div></div>
+  <div class="card"><div class="card-h"><div class="card-t">Positions by Client</div><button class="btn btn-sm btn-ghost" onclick="dlReport()">Export CSV</button></div>
+  <table class="dtable"><thead><tr><th>Client</th><th>Symbol</th><th>Side</th><th>Qty</th><th class="r">Avg</th><th class="r">Last</th><th class="r">Mkt Val</th><th class="r">P&L</th><th>Broker</th></tr></thead>
+  <tbody>${Clients.slice(0,6).flatMap(cl=>Pos.slice(0,2).map(p=>{const pnl=p.side==='Long'?(p.last-p.avg)*p.q:(p.avg-p.last)*p.q;return`<tr><td style="font-weight:600;color:var(--t0)">${cl.n}</td><td style="color:var(--t0)">${p.s}</td><td class="${p.side==='Long'?'green':'red'}" style="font-weight:600">${p.side}</td><td>${p.q}</td><td class="r">${fmt(p.avg)}</td><td class="r">${fmt(p.last)}</td><td class="r">${fmtM(p.q*p.last)}</td><td class="r ${pnl>=0?'green':'red'}">${pnl>=0?'+':''}${fmtM(pnl)}</td><td style="color:var(--t2)">${p.s.includes('/')?'Saxo':'DriveWealth'}</td></tr>`;})).join('')}</tbody></table></div></div>`;
+}
+
+function pgAdminOrd(c){
+  c.innerHTML=`<div class="apage anim"><div style="margin-bottom:24px"><div class="atitle">Order Monitor</div><div class="asub">Real-time order flow across all clients</div></div>
+  <div class="scards"><div class="scard"><div class="slbl">Active Orders</div><div class="sval yellow">${OO.length * 12}</div></div><div class="scard"><div class="slbl">Filled Today</div><div class="sval green">${OH.length * 24}</div></div><div class="scard"><div class="slbl">Rejection Rate</div><div class="sval green">0.3%</div></div><div class="scard"><div class="slbl">Avg Fill Time</div><div class="sval">42ms</div></div></div>
+  <div class="card"><div class="card-h"><div class="card-t">Live Orders</div></div>
+  <table class="dtable"><thead><tr><th>ID</th><th>Client</th><th>Symbol</th><th>Side</th><th>Type</th><th>Qty</th><th>Price</th><th>Status</th><th>Time</th><th>Route</th></tr></thead>
+  <tbody>${OO.map((o,i)=>`<tr><td style="color:var(--t2)">${o.id}</td><td style="font-weight:600;color:var(--t0)">${Clients[i%Clients.length].n}</td><td style="color:var(--t0)">${o.s}</td><td class="${o.side==='Buy'?'green':'red'}" style="font-weight:600">${o.side}</td><td style="color:var(--t2)">${o.type}</td><td>${o.q}</td><td>${fmt(o.p)}</td><td><span class="badge badge-yellow">${o.st}</span></td><td style="color:var(--t3)">${o.t}</td><td style="color:var(--t2)">DriveWealth</td></tr>`).join('')}${OH.map((o,i)=>`<tr><td style="color:var(--t2)">${o.id}</td><td style="font-weight:600;color:var(--t0)">${Clients[(i+3)%Clients.length].n}</td><td style="color:var(--t0)">${o.s}</td><td class="${o.side==='Buy'?'green':'red'}" style="font-weight:600">${o.side}</td><td style="color:var(--t2)">${o.type}</td><td>${o.q}</td><td>${fmt(o.fp)}</td><td><span class="badge badge-green">${o.st}</span></td><td style="color:var(--t3)">${o.t}</td><td style="color:var(--t2)">${o.s.includes('/')?'Saxo':'DriveWealth'}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+
+function pgPartners(c){
+  c.innerHTML=`<div class="apage anim"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px"><div><div class="atitle">Partner Brokers</div><div class="asub">White-label partner management</div></div><button class="btn btn-primary btn-sm" onclick="toast('Partner onboarding initiated','i')">+ Onboard Partner</button></div>
+  <div class="pcards">${Partners.map(p=>`<div class="pcard"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px"><div><div class="pname">${p.n}</div><div class="pmeta">${p.r} · ${p.id}</div></div><span class="badge badge-${p.st==='Active'?'green':'yellow'}">${p.st}</span></div><div class="pstats"><div><div class="psl">Clients</div><div class="psv">${p.cl.toLocaleString()}</div></div><div><div class="psl">AUM</div><div class="psv">${fmtC(p.aum)}</div></div><div><div class="psl">30d Volume</div><div class="psv">${fmtC(p.vol)}</div></div><div><div class="psl">API Calls/24h</div><div class="psv">${p.api.toLocaleString()}</div></div><div><div class="psl">Revenue Share</div><div class="psv">60/40</div></div><div><div class="psl">API Status</div><div class="psv"><span class="badge badge-${p.st==='Active'?'green':'yellow'}">${p.st==='Active'?'Live':'Setup'}</span></div></div></div><div style="margin-top:16px;display:flex;gap:8px"><button class="btn btn-sm btn-ghost" onclick="viewClient('CLT-001')">View Clients</button><button class="btn btn-sm btn-ghost">API Keys</button><button class="btn btn-sm btn-ghost">Config</button></div></div>`).join('')}</div></div>`;
+}
+
+function pgAudit(c){
+  c.innerHTML=`<div class="apage anim"><div style="margin-bottom:24px"><div class="atitle">Audit Log</div><div class="asub">Immutable record of all system events · Cryptographically signed</div></div>
+  <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center"><input class="input" placeholder="Search events..." style="max-width:300px"><select class="sel" style="max-width:180px;background:var(--bgi)"><option>All Levels</option><option>Info</option><option>Warning</option><option>Critical</option><option>Success</option></select><select class="sel" style="max-width:180px;background:var(--bgi)"><option>All Users</option><option>System</option><option>Sarah Chen</option><option>Ahmed Al-Rashid</option></select><div style="margin-left:auto"><button class="btn btn-sm btn-ghost" onclick="dlReport()">📥 Export for Audit</button></div></div>
+  <div class="card"><table class="dtable"><thead><tr><th>ID</th><th>Timestamp</th><th>User</th><th>Action</th><th>Target</th><th>Level</th><th>IP Address</th></tr></thead>
+  <tbody>${AuditLog.map(a=>`<tr><td style="color:var(--t3)">${a.id}</td><td style="color:var(--t2)">${a.ts}</td><td style="font-weight:600;color:var(--t0)">${a.u}</td><td style="color:var(--t1)">${a.a}</td><td style="color:var(--t2)">${a.tgt}</td><td><span class="loglvl log-${a.lv}">${a.lv==='s'?'SUCCESS':a.lv==='i'?'INFO':a.lv==='w'?'WARNING':'CRITICAL'}</span></td><td style="color:var(--t3)">${a.ip}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+
+function pgReports(c){
+  c.innerHTML=`<div class="apage anim"><div style="margin-bottom:24px"><div class="atitle">Reports & Downloads</div><div class="asub">Generate and download compliance-ready reports</div></div>
+  <div style="display:flex;gap:12px;margin-bottom:24px;align-items:center"><label class="flabel" style="margin:0">Date Range:</label><input type="date" class="input" style="max-width:160px" value="2025-02-01"><span style="color:var(--t3)">to</span><input type="date" class="input" style="max-width:160px" value="2025-02-16"><button class="btn btn-primary btn-sm">Generate All</button></div>
+  <div class="rcards">${Reports.map(r=>`<div class="rcard" onclick="dlReport('${r.t}')"><div class="ricn">${r.i}</div><div class="rtit">${r.t}</div><div class="rdesc">${r.d}</div><div style="margin-top:12px"><span class="badge badge-blue">📥 Download</span></div></div>`).join('')}</div></div>`;
+}
+
+function pgSecurity(c){
+  c.innerHTML=`<div class="apage anim"><div style="margin-bottom:24px"><div class="atitle">Security Center</div><div class="asub">Two-factor authentication, devices & security monitoring</div></div>
+  <div class="astats">
+    <div class="astatc ga"><div class="asi">🛡️</div><div class="asv green">Secure</div><div class="asl">System Status</div><div class="asch green">All checks passed</div></div>
+    <div class="astatc ba" id="mfaStatusCard"><div class="asi">🔐</div><div class="asv" id="mfaStatusVal">—</div><div class="asl">MFA Status</div><div class="asch" id="mfaStatusSub">Loading...</div></div>
+    <div class="astatc ya"><div class="asi">📱</div><div class="asv" id="deviceCount">—</div><div class="asl">Trusted Devices</div><div class="asch" id="backupCount">—</div></div>
+    <div class="astatc pa"><div class="asi">🔍</div><div class="asv">0</div><div class="asl">Active Incidents</div><div class="asch green">No open incidents</div></div>
+  </div>
+  <div class="agrd">
+    <!-- MFA Setup Card -->
+    <div class="card" id="mfaSetupCard"><div class="card-h"><div class="card-t">Two-Factor Authentication</div></div>
+      <div style="padding:20px" id="mfaSetupBody"><div style="text-align:center;color:var(--t3);padding:20px">Loading MFA status...</div></div>
+    </div>
+    <!-- Trusted Devices Card -->
+    <div class="card"><div class="card-h"><div class="card-t">Trusted Devices</div><button class="btn btn-sm btn-ghost" onclick="revokeAllDevices()">Revoke All</button></div>
+      <div id="deviceList" style="padding:16px"><div style="color:var(--t3);font-size:13px;text-align:center;padding:16px">Loading...</div></div>
+    </div>
+    <!-- Login History Card -->
+    <div class="card"><div class="card-h"><div class="card-t">Recent Login History</div></div>
+      <div id="loginHistoryBody" style="max-height:300px;overflow-y:auto"><div style="color:var(--t3);font-size:13px;text-align:center;padding:16px">Loading...</div></div>
+    </div>
+    <!-- Security Checklist -->
+    <div class="card"><div class="card-h"><div class="card-t">Security Checklist</div></div><div style="padding:16px">${[
+      {n:'TLS 1.3 Encryption',s:true},{n:'Database Encryption (AES-256)',s:true},
+      {n:'API Rate Limiting',s:true},{n:'Webhook HMAC Verification',s:true},
+      {n:'CSRF Protection',s:true},{n:'Session Fingerprinting',s:true},
+      {n:'Credential Stuffing Detection',s:true},{n:'IP Reputation Blocking',s:true},
+      {n:'Dual Authorization (Withdrawals)',s:true},{n:'Login Anomaly Detection',s:true}
+    ].map(i=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(28,42,66,.3)"><span style="font-size:13px">${i.n}</span><span class="badge badge-${i.s?'green':'yellow'}">${i.s?'✓ Active':'⏳ Pending'}</span></div>`).join('')}</div></div>
+  </div></div>`;
+  loadSecurityData();
+}
+async function loadSecurityData(){
+  if(!S.apiMode)return showMockSecurity();
+  try{
+    const [status,devices,history]=await Promise.all([
+      T1API.getMFAStatus().catch(()=>null),
+      T1API.getTrustedDevices().catch(()=>({data:[]})),
+      T1API.getLoginHistory().catch(()=>({data:[]})),
+    ]);
+    renderMFASetup(status);
+    renderDevices(devices?.data||[]);
+    renderLoginHistory(history?.data||[]);
+  }catch(e){showMockSecurity();}
+}
+function showMockSecurity(){
+  $('#mfaStatusVal').textContent='Demo';$('#mfaStatusSub').textContent='Mock mode';
+  $('#mfaSetupBody').innerHTML='<div style="padding:20px;text-align:center;color:var(--t3)">Connect to backend to manage 2FA settings</div>';
+  $('#deviceList').innerHTML='<div style="padding:16px;text-align:center;color:var(--t3)">No device data in demo mode</div>';
+  $('#loginHistoryBody').innerHTML='<div style="padding:16px;text-align:center;color:var(--t3)">No history in demo mode</div>';
+}
+function renderMFASetup(status){
+  if(!status||status.error){
+    $('#mfaStatusVal').textContent='Unknown';$('#mfaStatusSub').textContent='Could not load';return;
+  }
+  const e=status.enabled;
+  $('#mfaStatusVal').textContent=e?'Enabled':'Disabled';
+  $('#mfaStatusVal').className=e?'asv green':'asv red';
+  $('#mfaStatusSub').textContent=e?`Method: ${status.method==='email'?'Email':'Authenticator'}`:'Not protected';
+  $('#deviceCount').textContent=status.trustedDevices?.length||0;
+  $('#backupCount').textContent=`${status.backupCodesRemaining||0} backup codes`;
+  if(e){
+    $('#mfaSetupBody').innerHTML=`
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:12px;background:var(--greend);border-radius:var(--r)">
+        <span style="font-size:24px">✅</span>
+        <div><div style="font-weight:600;color:var(--green)">MFA is enabled</div>
+        <div style="font-size:12px;color:var(--t2)">Method: ${status.method==='email'?'📧 Email verification':'📱 Authenticator app (TOTP)'}</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid var(--bd);border-radius:var(--r)">
+          <div><div style="font-size:13px;font-weight:600">Backup Codes</div><div style="font-size:11px;color:var(--t3)">${status.backupCodesRemaining} unused codes remaining</div></div>
+          <button class="btn btn-sm btn-ghost" onclick="regenBackupCodes()">Regenerate</button>
+        </div>
+        <button class="btn btn-ghost" style="color:var(--red);border-color:var(--red)" onclick="showDisableMFA()">🔓 Disable MFA</button>
+      </div>`;
+  } else {
+    $('#mfaSetupBody').innerHTML=`
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:12px;background:var(--redd);border-radius:var(--r)">
+        <span style="font-size:24px">⚠️</span>
+        <div><div style="font-weight:600;color:var(--red)">MFA is not enabled</div>
+        <div style="font-size:12px;color:var(--t2)">Your account is less secure without 2FA</div></div>
+      </div>
+      <div style="font-size:13px;color:var(--t2);margin-bottom:16px">Choose a two-factor authentication method:</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button class="btn btn-primary" onclick="startTOTPSetup()" style="justify-content:flex-start;gap:12px">
+          <span style="font-size:18px">📱</span> Set up Google Authenticator / Authy
+        </button>
+        <button class="btn btn-ghost" onclick="startEmailMFA()" style="justify-content:flex-start;gap:12px">
+          <span style="font-size:18px">📧</span> Use email verification codes
+        </button>
+      </div>`;
+  }
+}
+async function startTOTPSetup(){
+  $('#mfaSetupBody').innerHTML='<div style="text-align:center;padding:20px">Setting up authenticator...</div>';
+  const res=await T1API.setupTOTP();
+  if(res.error){toast(res.error,'e');loadSecurityData();return;}
+  $('#mfaSetupBody').innerHTML=`
+    <div style="font-size:14px;font-weight:600;margin-bottom:12px">Step 1: Scan QR Code</div>
+    <div style="text-align:center;margin-bottom:16px"><img src="${res.qrCode}" style="width:200px;height:200px;border-radius:8px;border:1px solid var(--bd)"></div>
+    <div style="font-size:11px;color:var(--t3);text-align:center;margin-bottom:16px">Can't scan? Manual key: <span class="mono" style="user-select:all">${res.secret}</span></div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:8px">Step 2: Enter the code shown in your app</div>
+    <div style="display:flex;gap:8px"><input class="input mono" id="totpConfirmCode" maxlength="6" placeholder="000000" style="text-align:center;font-size:18px;letter-spacing:4px">
+    <button class="btn btn-primary" onclick="confirmTOTPSetup()">Confirm</button></div>`;
+  $('#totpConfirmCode').focus();
+}
+async function confirmTOTPSetup(){
+  const code=$('#totpConfirmCode').value.trim();
+  if(!code||code.length!==6){toast('Enter the 6-digit code','e');return;}
+  const res=await T1API.confirmTOTP(code);
+  if(res.error){toast(res.error,'e');return;}
+  toast('✅ TOTP MFA enabled!','s');
+  showModal('Save Your Backup Codes',`
+    <div style="font-size:13px;color:var(--t2);margin-bottom:16px">These codes can be used if you lose your authenticator. Each code works only once. <strong>Save them now!</strong></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bgi);padding:16px;border-radius:var(--r);font-family:var(--mono);font-size:14px">${res.backupCodes.map(c=>`<div style="padding:4px 8px;background:var(--bg2);border-radius:4px;text-align:center">${c}</div>`).join('')}</div>`,
+    '<button class="btn btn-primary" onclick="closeModal()">I\'ve saved my codes</button>');
+  loadSecurityData();
+}
+async function startEmailMFA(){
+  $('#mfaSetupBody').innerHTML='<div style="text-align:center;padding:20px">Sending verification code...</div>';
+  const res=await T1API.setupEmailMFA();
+  if(res.error){toast(res.error,'e');loadSecurityData();return;}
+  $('#mfaSetupBody').innerHTML=`
+    <div style="font-size:14px;font-weight:600;margin-bottom:8px">Check Your Email</div>
+    <div style="font-size:13px;color:var(--t2);margin-bottom:16px">We sent a 6-digit code to ${res.maskedEmail||'your email'}</div>
+    <div style="display:flex;gap:8px"><input class="input mono" id="emailMFACode" maxlength="6" placeholder="000000" style="text-align:center;font-size:18px;letter-spacing:4px">
+    <button class="btn btn-primary" onclick="confirmEmailMFA()">Confirm</button></div>`;
+  $('#emailMFACode').focus();
+}
+async function confirmEmailMFA(){
+  const code=$('#emailMFACode').value.trim();
+  if(!code||code.length!==6){toast('Enter the 6-digit code','e');return;}
+  const res=await T1API.confirmEmailMFA(code);
+  if(res.error){toast(res.error,'e');return;}
+  toast('✅ Email MFA enabled!','s');
+  showModal('Save Your Backup Codes',`
+    <div style="font-size:13px;color:var(--t2);margin-bottom:16px">Save these backup codes securely. Each code works only once.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bgi);padding:16px;border-radius:var(--r);font-family:var(--mono);font-size:14px">${res.backupCodes.map(c=>`<div style="padding:4px 8px;background:var(--bg2);border-radius:4px;text-align:center">${c}</div>`).join('')}</div>`,
+    '<button class="btn btn-primary" onclick="closeModal()">I\'ve saved my codes</button>');
+  loadSecurityData();
+}
+function showDisableMFA(){
+  showModal('Disable MFA',`
+    <div style="padding:12px;background:var(--redd);border-radius:var(--r);margin-bottom:16px;font-size:13px;color:var(--red)">⚠️ This will remove two-factor authentication from your account. Your backup codes and trusted devices will also be deleted.</div>
+    <div class="lfg"><label class="flabel">Confirm Your Password</label><input class="input" id="disableMFAPw" type="password" placeholder="Enter your password"></div>`,
+    '<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" style="background:var(--red);color:#fff" onclick="doDisableMFA()">Disable MFA</button>');
+}
+async function doDisableMFA(){
+  const pw=$('#disableMFAPw').value;
+  if(!pw){toast('Password required','e');return;}
+  const res=await T1API.disableMFA(pw);
+  if(res.error){toast(res.error,'e');return;}
+  toast('MFA disabled','i');closeModal();loadSecurityData();
+}
+async function regenBackupCodes(){
+  const pw=prompt('Enter your password to regenerate backup codes:');
+  if(!pw)return;
+  const res=await T1API.regenerateBackupCodes(pw);
+  if(res.error){toast(res.error,'e');return;}
+  showModal('New Backup Codes',`
+    <div style="font-size:13px;color:var(--t2);margin-bottom:16px">Your old backup codes have been invalidated. Save these new codes:</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bgi);padding:16px;border-radius:var(--r);font-family:var(--mono);font-size:14px">${res.backupCodes.map(c=>`<div style="padding:4px 8px;background:var(--bg2);border-radius:4px;text-align:center">${c}</div>`).join('')}</div>`,
+    '<button class="btn btn-primary" onclick="closeModal()">I\'ve saved my codes</button>');
+  loadSecurityData();
+}
+function renderDevices(devices){
+  if(!devices.length){$('#deviceList').innerHTML='<div style="padding:16px;text-align:center;color:var(--t3);font-size:13px">No trusted devices</div>';return;}
+  $('#deviceList').innerHTML=devices.map(d=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(28,42,66,.3)">
+      <div><div style="font-size:13px;font-weight:500">${d.name||'Unknown device'}</div>
+        <div style="font-size:11px;color:var(--t3)">IP: ${d.ip||'—'} · Last used: ${d.lastUsed?new Date(d.lastUsed).toLocaleDateString():'-'}</div></div>
+      <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="revokeDevice('${d.id}')">Remove</button>
+    </div>`).join('');
+}
+async function revokeDevice(id){const res=await T1API.revokeTrustedDevice(id);if(!res.error){toast('Device removed','s');loadSecurityData();}else toast(res.error,'e');}
+async function revokeAllDevices(){if(!confirm('Revoke all trusted devices? You will need to verify MFA on every login.'))return;
+  const res=await T1API.revokeAllDevices();if(!res.error){toast('All devices revoked','s');loadSecurityData();}else toast(res.error,'e');}
+function renderLoginHistory(history){
+  if(!history.length){$('#loginHistoryBody').innerHTML='<div style="padding:16px;text-align:center;color:var(--t3);font-size:13px">No login history</div>';return;}
+  $('#loginHistoryBody').innerHTML=`<table class="dtable"><thead><tr><th>Time</th><th>Device</th><th>IP</th><th>Method</th><th>Result</th><th>Risk</th></tr></thead><tbody>${
+    history.map(h=>{
+      const rc=h.result==='success'?'green':h.result==='failed'?'red':'yellow';
+      const risk=h.riskScore>=50?'red':h.riskScore>=25?'yellow':'green';
+      return `<tr><td>${new Date(h.timestamp).toLocaleString()}</td><td style="color:var(--t2)">${h.device||'—'}</td><td style="color:var(--t3)">${h.ip||'—'}</td>
+        <td>${h.mfaMethod||'—'}</td><td><span class="badge badge-${rc}">${h.result}</span></td>
+        <td><span class="badge badge-${risk}">${h.riskScore||0}</span></td></tr>`;
+    }).join('')
+  }</tbody></table>`;
+}
+
+// ================================================================
+// REPORT DOWNLOAD HELPER
+// ================================================================
+function dlReport(name='Report'){
+  toast(`Generating ${name}...`,'i');
+  setTimeout(()=>{
+    const csv='ID,Timestamp,Type,Symbol,Side,Qty,Price,Status\n'+OH.map(o=>`${o.id},2025-02-16 ${o.t},${o.type},${o.s},${o.side},${o.q},${o.fp},${o.st}`).join('\n');
+    const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=`T1_${name.replace(/\s/g,'_')}_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    toast(`${name} downloaded`,'s');
+  },1000);
+}
+</script>
+<script src="/api-client.js"></script>
+<script>
+// Service Worker registration (PWA)
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/sw.js').then(r=>{
+      console.log('SW registered',r.scope);
+    }).catch(e=>console.warn('SW registration failed',e));
+  });
+}
+// Sidebar toggle for mobile
+function toggleSidebar(){
+  const sb=document.querySelector('.sidebar');
+  if(sb)sb.classList.toggle('open');
+}
+// Close sidebar on nav click (mobile)
+document.addEventListener('click',e=>{
+  if(e.target.closest('.sitem')){
+    const sb=document.querySelector('.sidebar');
+    if(sb)sb.classList.remove('open');
+  }
+  // Close sidebar when clicking outside on mobile
+  if(!e.target.closest('.sidebar')&&!e.target.closest('.hamburger')){
+    const sb=document.querySelector('.sidebar');
+    if(sb)sb.classList.remove('open');
+  }
+});
+// PWA install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  // Could show "Install App" button here
+});
+</script>
+</body></html>

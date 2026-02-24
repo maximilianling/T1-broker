@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>T1 Broker — Privacy Policy</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050810;--bg2:#0a0f1e;--surface:#0d1422;--border:rgba(255,255,255,.06);--text:#e8ecf4;--text2:#8892a8;--text3:#4a5568;--accent:#3b82f6;--purple:#8b5cf6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{padding:20px 40px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:white}
+nav a{color:var(--text);text-decoration:none;font-weight:700;font-size:18px;letter-spacing:-.3px}
+nav span{color:var(--accent)}
+.container{max-width:800px;margin:0 auto;padding:60px 24px 100px}
+h1{font-size:36px;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.date{font-size:13px;color:var(--text3);margin-bottom:40px;font-family:'JetBrains Mono',monospace}
+h2{font-size:20px;font-weight:700;margin:40px 0 12px;letter-spacing:-.3px}
+h3{font-size:16px;font-weight:600;margin:24px 0 8px;color:var(--text2)}
+p{font-size:15px;color:var(--text2);margin-bottom:16px}
+ul{margin:0 0 16px 24px;color:var(--text2);font-size:15px}
+li{margin-bottom:6px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;font-size:12px;color:var(--text3);max-width:800px;margin:0 auto}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo-mark">T1</div>
+  <a href="/landing.html">T1 <span>Broker</span></a>
+</nav>
+<div class="container">
+<h1>Privacy Policy</h1>
+<p class="date">Effective Date: February 18, 2025 | Last Updated: February 18, 2026</p>
+
+<p>T1 Broker Ltd. ("T1 Broker," "we," "us," or "our") is committed to protecting the privacy and security of your personal information. This Privacy Policy describes how we collect, use, disclose, and safeguard information when you use our trading platform, mobile applications, and related services (collectively, the "Platform").</p>
+
+<h2>1. Information We Collect</h2>
+
+<h3>1.1 Account Information</h3>
+<p>When you create an account, we collect your full legal name, email address, phone number, date of birth, country of residence, and government-issued identification documents for identity verification (KYC) purposes.</p>
+
+<h3>1.2 Financial Information</h3>
+<p>To provide trading services, we collect bank account details, cryptocurrency wallet addresses, transaction history, portfolio holdings, and order activity. Payment information is encrypted using AES-256-GCM authenticated encryption and stored in compliance with financial data protection standards.</p>
+
+<h3>1.3 Technical Information</h3>
+<p>We automatically collect IP addresses, device identifiers, browser type and version, operating system, session fingerprints, login timestamps, and usage patterns. This data is used for security (session hijacking detection, threat scoring) and platform optimization.</p>
+
+<h3>1.4 Communications</h3>
+<p>We retain support tickets, in-app messages, and email correspondence related to your account for record-keeping and dispute resolution.</p>
+
+<h2>2. How We Use Your Information</h2>
+<p>We use collected information for the following purposes:</p>
+<ul>
+  <li>Account creation, identity verification, and ongoing KYC compliance</li>
+  <li>Executing trades, processing deposits and withdrawals, and maintaining your portfolio</li>
+  <li>Security monitoring, fraud detection, and threat intelligence (including automated IP blocking and anomaly detection)</li>
+  <li>Compliance with anti-money laundering (AML) regulations, sanctions screening, and regulatory reporting</li>
+  <li>Platform performance monitoring, debugging, and service improvement</li>
+  <li>Sending transactional notifications (order fills, margin calls, security alerts) and, with your consent, marketing communications</li>
+</ul>
+
+<h2>3. Data Encryption &amp; Security</h2>
+<p>We implement defense-in-depth security measures to protect your data:</p>
+<ul>
+  <li><strong>Encryption at rest:</strong> Sensitive fields (bank accounts, API keys, private keys) are encrypted using AES-256-GCM with authenticated encryption tags</li>
+  <li><strong>Encryption in transit:</strong> All connections enforced over TLS 1.2+ with HSTS headers</li>
+  <li><strong>Database security:</strong> Role-separated database users (application vs. admin vs. backup), statement timeouts, and connection-level isolation</li>
+  <li><strong>Password security:</strong> Passwords hashed with bcrypt (cost factor 12), never stored in plaintext</li>
+  <li><strong>API protection:</strong> Web Application Firewall (WAF) with 19 attack pattern detectors, rate limiting, CSRF protection, and request replay detection</li>
+  <li><strong>Backup security:</strong> Daily database archives encrypted with AES-256-GCM before cloud storage upload</li>
+  <li><strong>Response sanitization:</strong> Automated stripping of 30+ sensitive field types from all API responses</li>
+</ul>
+
+<h2>4. Data Sharing &amp; Third Parties</h2>
+<p>We do not sell your personal information. We may share data with:</p>
+<ul>
+  <li><strong>Brokerage partners</strong> (Saxo Bank, DriveWealth) for order execution and settlement</li>
+  <li><strong>Blockchain networks</strong> for cryptocurrency transaction processing (public addresses only)</li>
+  <li><strong>KYC/AML providers</strong> for identity verification and sanctions screening</li>
+  <li><strong>Cloud infrastructure providers</strong> (DigitalOcean) for hosting and backup storage, under strict data processing agreements</li>
+  <li><strong>Regulatory authorities</strong> when required by law, court order, or regulatory obligation</li>
+</ul>
+
+<h2>5. Data Retention</h2>
+<p>We retain your account data for the duration of your active account plus 7 years after closure, as required by financial regulations. Transaction records are retained for a minimum of 5 years. Audit logs and security event records are retained for 2 years. You may request deletion of non-regulatory data at any time.</p>
+
+<h2>6. Your Rights</h2>
+<p>Depending on your jurisdiction, you may have the right to:</p>
+<ul>
+  <li>Access the personal data we hold about you</li>
+  <li>Request correction of inaccurate data</li>
+  <li>Request deletion of your data (subject to regulatory retention requirements)</li>
+  <li>Withdraw consent for marketing communications</li>
+  <li>Request data portability in a machine-readable format</li>
+  <li>Object to automated decision-making, including risk scoring</li>
+</ul>
+<p>To exercise these rights, contact <a href="mailto:privacy@t1broker.com">privacy@t1broker.com</a>.</p>
+
+<h2>7. Cookies &amp; Tracking</h2>
+<p>We use essential cookies for authentication (session tokens, CSRF tokens) and security (rate limiting identifiers). We do not use third-party advertising trackers. Analytics are performed using self-hosted infrastructure without sharing data with third-party analytics providers.</p>
+
+<h2>8. International Data Transfers</h2>
+<p>Your data may be processed in data centers located outside your country of residence. We ensure appropriate safeguards including encryption in transit, data processing agreements, and compliance with applicable cross-border data transfer mechanisms.</p>
+
+<h2>9. Children's Privacy</h2>
+<p>Our Platform is not intended for individuals under the age of 18. We do not knowingly collect personal information from minors. If we discover that a minor has created an account, we will promptly close the account and delete associated data.</p>
+
+<h2>10. Changes to This Policy</h2>
+<p>We may update this Privacy Policy periodically. Material changes will be communicated via email notification and platform announcement. Continued use of the Platform after changes constitutes acceptance of the revised policy.</p>
+
+<h2>11. Contact Us</h2>
+<p>For privacy-related inquiries:</p>
+<p>T1 Broker Ltd.<br>Data Protection Officer<br>Email: <a href="mailto:privacy@t1broker.com">privacy@t1broker.com</a></p>
+</div>
+
+<div class="footer">
+  <a href="/landing.html" style="color:var(--text3)">← Back to Homepage</a> &nbsp;|&nbsp;
+  <a href="/terms.html" style="color:var(--text3)">Terms of Service</a>
+  <p style="margin-top:12px">&copy; 2025 T1 Broker Ltd. All rights reserved.</p>
+</div>
+</body>
+</html>

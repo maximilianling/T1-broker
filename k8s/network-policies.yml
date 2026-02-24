@@ -1,0 +1,264 @@
+# ================================================================
+# T1 BROKER — KUBERNETES NETWORK POLICIES
+# Zero-trust pod isolation: all traffic denied by default,
+# only explicitly allowed flows are permitted.
+# ================================================================
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: t1-broker
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+
+---
+# ════════════════════════════════════════════
+# APP PODS — Accept traffic only from nginx ingress
+# ════════════════════════════════════════════
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-app-ingress
+  namespace: t1-broker
+spec:
+  podSelector:
+    matchLabels:
+      app: t1-broker
+      tier: backend
+  policyTypes:
+    - Ingress
+  ingress:
+    # Only from nginx ingress controller
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+        - podSelector:
+            matchLabels:
+              app: nginx-ingress
+      ports:
+        - protocol: TCP
+          port: 3000
+
+---
+# ════════════════════════════════════════════
+# APP PODS — Egress: only to DB, Redis, and DNS
+# ════════════════════════════════════════════
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-app-egress
+  namespace: t1-broker
+spec:
+  podSelector:
+    matchLabels:
+      app: t1-broker
+      tier: backend
+  policyTypes:
+    - Egress
+  egress:
+    # To PostgreSQL
+    - to:
+        - podSelector:
+            matchLabels:
+              app: t1-broker
+              tier: database
+      ports:
+        - protocol: TCP
+          port: 5432
+    # To Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: t1-broker
+              tier: cache
+      ports:
+        - protocol: TCP
+          port: 6379
+    # DNS resolution (required for all pods)
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # To external APIs (market data providers, brokerages)
+    # Restrict to HTTPS only
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
+
+---
+# ════════════════════════════════════════════
+# DATABASE — Accept connections only from app pods
+# ════════════════════════════════════════════
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-db-ingress
+  namespace: t1-broker
+spec:
+  podSelector:
+    matchLabels:
+      app: t1-broker
+      tier: database
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Only from backend app pods
+    - from:
+        - podSelector:
+            matchLabels:
+              app: t1-broker
+              tier: backend
+      ports:
+        - protocol: TCP
+          port: 5432
+    # From backup job pods
+    - from:
+        - podSelector:
+            matchLabels:
+              app: t1-broker
+              tier: backup
+      ports:
+        - protocol: TCP
+          port: 5432
+  egress:
+    # DNS only — database should never make outbound connections
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+
+---
+# ════════════════════════════════════════════
+# REDIS — Accept connections only from app pods
+# ════════════════════════════════════════════
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-redis-ingress
+  namespace: t1-broker
+spec:
+  podSelector:
+    matchLabels:
+      app: t1-broker
+      tier: cache
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Only from backend app pods
+    - from:
+        - podSelector:
+            matchLabels:
+              app: t1-broker
+              tier: backend
+      ports:
+        - protocol: TCP
+          port: 6379
+  egress:
+    # DNS only — Redis should never reach external services
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+
+---
+# ════════════════════════════════════════════
+# NGINX INGRESS — Accept only external HTTPS
+# ════════════════════════════════════════════
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-nginx-ingress
+  namespace: t1-broker
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx-ingress
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Accept external traffic on 80 (redirect) and 443 (TLS)
+    - from: []
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+  egress:
+    # Only to backend app pods
+    - to:
+        - podSelector:
+            matchLabels:
+              app: t1-broker
+              tier: backend
+      ports:
+        - protocol: TCP
+          port: 3000
+    # DNS
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+
+---
+# ════════════════════════════════════════════
+# BACKUP PODS — Only to DB and S3
+# ════════════════════════════════════════════
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-backup-egress
+  namespace: t1-broker
+spec:
+  podSelector:
+    matchLabels:
+      app: t1-broker
+      tier: backup
+  policyTypes:
+    - Egress
+  egress:
+    # To PostgreSQL
+    - to:
+        - podSelector:
+            matchLabels:
+              app: t1-broker
+              tier: database
+      ports:
+        - protocol: TCP
+          port: 5432
+    # To S3 (HTTPS only)
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
+    # DNS
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
