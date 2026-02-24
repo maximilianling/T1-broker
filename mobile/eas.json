@@ -1,0 +1,34 @@
+{
+  "cli": { "version": ">= 7.0.0" },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": { "simulator": true },
+      "env": { "API_URL": "http://localhost:3000/api/v1" }
+    },
+    "preview": {
+      "distribution": "internal",
+      "ios": { "buildConfiguration": "Release" },
+      "env": { "API_URL": "https://staging-api.t1broker.com/api/v1" }
+    },
+    "production": {
+      "ios": { "buildConfiguration": "Release", "autoIncrement": true },
+      "android": { "buildType": "app-bundle", "autoIncrement": true },
+      "env": { "API_URL": "https://api.t1broker.com/api/v1" }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "your@apple.id",
+        "ascAppId": "1234567890",
+        "appleTeamId": "TEAMID"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./google-service-account.json",
+        "track": "internal"
+      }
+    }
+  }
+}

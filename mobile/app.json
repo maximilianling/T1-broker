@@ -1,0 +1,65 @@
+{
+  "expo": {
+    "name": "T1 Broker",
+    "slug": "t1-broker",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./src/assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0a0f1c"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "scheme": "t1broker",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.t1broker.app",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Use Face ID to securely log in to your T1 Broker account",
+        "NSCameraUsageDescription": "Scan QR codes for two-factor authentication setup",
+        "UIBackgroundModes": ["remote-notification"]
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/adaptive-icon.png",
+        "backgroundColor": "#0a0f1c"
+      },
+      "package": "com.t1broker.app",
+      "permissions": ["USE_BIOMETRIC", "USE_FINGERPRINT", "CAMERA", "VIBRATE"],
+      "googleServicesFile": "./google-services.json"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-local-authentication",
+      "expo-notifications",
+      "expo-camera",
+      [
+        "expo-build-properties",
+        {
+          "android": { "compileSdkVersion": 34, "targetSdkVersion": 34, "minSdkVersion": 24 },
+          "ios": { "deploymentTarget": "15.0" }
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "https://api.t1broker.com/api/v1",
+      "wsUrl": "wss://api.t1broker.com/ws",
+      "eas": { "projectId": "your-eas-project-id" }
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "notification": {
+      "icon": "./src/assets/notification-icon.png",
+      "color": "#2563eb",
+      "androidMode": "default"
+    }
+  }
+}
